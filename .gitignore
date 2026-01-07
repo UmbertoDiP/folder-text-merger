@@ -32,15 +32,19 @@ desktop.ini
 *.log
 
 # Test outputs
-testiamo/test_real_scenario/output*.txt
-testiamo/test_real_scenario/real_output.txt
-testiamo/edge_cases/edge_output.txt
-testiamo/edge_cases/unicode_output.txt
-testiamo/stress_test/*.txt
-testiamo/size_limit/output*.txt
-testiamo/size_limit/size_output*.txt
-testiamo/context_menu_test/output*.txt
-testiamo/*.txt
+tests/testiamo/test_real_scenario/output*.txt
+tests/testiamo/test_real_scenario/real_output.txt
+tests/testiamo/edge_cases/edge_output.txt
+tests/testiamo/edge_cases/unicode_output.txt
+tests/testiamo/stress_test/*.txt
+tests/testiamo/size_limit/output*.txt
+tests/testiamo/size_limit/size_output*.txt
+tests/testiamo/context_menu_test/output*.txt
+tests/testiamo/*.txt
+test_output.txt
+
+# Backup folder
+backup/
 
 # Temporary files
 *.tmp

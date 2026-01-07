@@ -1,0 +1,7 @@
+This file is deeply nested in the folder structure.
+Path: deep/nested/folders/structure/deep_file.txt
+
+Testing:
+- Recursive folder traversal
+- Deep path handling
+- Relative path display in output

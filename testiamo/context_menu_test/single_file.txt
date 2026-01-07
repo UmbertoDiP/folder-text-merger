@@ -1,2 +1,0 @@
-This is a single standalone file in the root.
-Testing single file selection from context menu.

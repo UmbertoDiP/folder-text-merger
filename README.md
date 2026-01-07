@@ -17,11 +17,63 @@ A high-performance CLI tool to merge multiple text files from folders into a sin
 - ✅ **Context menu ready** - Windows Explorer integration
 - ✅ **Error handling** - Robust exit codes (0/2/3)
 
+## 📁 Project Structure
+
+```
+FolderTextMerger/
+├── src/                          # Source code
+│   ├── FolderTextMerger.py      # Main application
+│   └── FolderTextMerger.spec    # PyInstaller spec file
+├── scripts/                      # Installation and utility scripts
+│   ├── installer.ps1            # Install to system
+│   ├── uninstaller.ps1          # Remove from system
+│   └── rebuild-install.ps1      # Build and install
+├── docs/                         # Documentation
+│   ├── LICENSE                  # MIT License
+│   ├── RECOVERY_REPORT.md       # Python 3.13→3.12 migration
+│   ├── FINAL_TEST_REPORT.md     # Test results
+│   └── CONTEXT_MENU_CLEANUP_REPORT.md
+├── tests/                        # Test suites
+│   └── testiamo/                # Test scenarios
+├── backup/                       # Backup files (git-ignored)
+├── build/                        # Build artifacts (git-ignored)
+├── dist/                         # Compiled executables (git-ignored)
+├── FolderTextMerger.exe         # Production executable
+└── README.md                     # This file
+```
+
 ## 📦 Installation
 
 ### Windows Executable (Recommended)
 
+#### Automatic Installation
+
+```powershell
+# Run installer from scripts folder
+.\scripts\installer.ps1
+```
+
+This will:
+- Install `FolderTextMerger.exe` to `%LOCALAPPDATA%\FolderTextMerger\` (user) or `C:\Program Files\FolderTextMerger\` (admin)
+- Add "Merge text files here" to Windows Explorer context menu
+- Create log directory at `%LOCALAPPDATA%\FolderTextMerger\logs\`
+
+#### Manual Installation
+
 Download the latest `FolderTextMerger.exe` from [Releases](../../releases) and place it in a permanent location (e.g., `C:\Program Files\FolderTextMerger\`).
+
+### Uninstallation
+
+```powershell
+# Remove FolderTextMerger completely
+.\scripts\uninstaller.ps1
+```
+
+This will:
+- Remove context menu integration
+- Delete executable and installation directory
+- Clean up registry entries
+- Preserve log files (can be manually deleted)
 
 ### From Source
 
@@ -38,7 +90,7 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install pyinstaller
 
 # Build executable
-pyinstaller --onefile --clean FolderTextMerger.py
+pyinstaller --onefile --clean src/FolderTextMerger.py
 ```
 
 ## 🚀 Quick Start
@@ -65,8 +117,8 @@ Right-click on files/folders and select "Merge with FolderTextMerger" (requires 
 
 ## 📚 Documentation
 
-- [Recovery Report](RECOVERY_REPORT.md) - Technical details on Python 3.13 → 3.12 migration
-- [Final Test Report](FINAL_TEST_REPORT.md) - Complete test results (21/21 tests passing)
+- [Recovery Report](docs/RECOVERY_REPORT.md) - Technical details on Python 3.13 → 3.12 migration
+- [Final Test Report](docs/FINAL_TEST_REPORT.md) - Complete test results (21/21 tests passing)
 - [Installation Guide](docs/INSTALLATION.md) - Detailed setup instructions
 - [User Guide](docs/USER_GUIDE.md) - Comprehensive usage examples
 
@@ -76,13 +128,13 @@ The project includes comprehensive test suites:
 
 ```bash
 # Run basic tests
-python testiamo/test_runner.py
+python tests/testiamo/test_runner.py
 
 # Run integration tests
-python testiamo/comprehensive_test.py
+python tests/testiamo/comprehensive_test.py
 
 # Run context menu simulations
-python testiamo/context_menu_scenarios.py
+python tests/testiamo/context_menu_scenarios.py
 ```
 
 **Test Results**: 21/21 (100% pass rate)
@@ -109,7 +161,7 @@ python testiamo/context_menu_scenarios.py
 rm -rf build dist *.spec
 
 # Compile
-pyinstaller --onefile --clean FolderTextMerger.py
+pyinstaller --onefile --clean src/FolderTextMerger.py
 
 # Verify
 dist/FolderTextMerger.exe --help
@@ -119,17 +171,17 @@ dist/FolderTextMerger.exe --help
 
 ```bash
 # Quick test
-python FolderTextMerger.py testiamo/test_real_scenario -o test_output.txt
+python src/FolderTextMerger.py tests/testiamo/test_real_scenario -o test_output.txt
 
 # Full test suite
-python testiamo/comprehensive_test.py
+python tests/testiamo/comprehensive_test.py
 ```
 
 ## 🐛 Troubleshooting
 
 ### Issue: "The file does not have an app associated with it"
 
-**Solution**: This indicates a corrupt PE header. Use Python 3.12 instead of 3.13 (see [RECOVERY_REPORT.md](RECOVERY_REPORT.md)).
+**Solution**: This indicates a corrupt PE header. Use Python 3.12 instead of 3.13 (see [RECOVERY_REPORT.md](docs/RECOVERY_REPORT.md)).
 
 ### Issue: File skipped as "binary-like"
 
