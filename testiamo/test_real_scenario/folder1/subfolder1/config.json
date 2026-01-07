@@ -1,0 +1,12 @@
+{
+  "version": "1.0.0",
+  "settings": {
+    "max_file_size": 10,
+    "encoding": "utf-8",
+    "excluded_dirs": [".git", "node_modules"]
+  },
+  "features": {
+    "logging": true,
+    "debug_mode": false
+  }
+}

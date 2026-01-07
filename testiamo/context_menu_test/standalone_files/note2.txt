@@ -1,0 +1,6 @@
+Another standalone file.
+Used to test multiple file selection.
+
+Notes:
+- Test A
+- Test B
