@@ -47,29 +47,87 @@ Write-Host ""
 
 Write-Host ">>> Removing context menu integration..."
 
-$ContextMenuKey = Join-Path $RegistryBase "Directory\shell\$ApplicationName"
+# Load supported extensions for cleanup
+$ProjectRoot = Split-Path -Parent $PSScriptRoot
+$ConfigFile = Join-Path $ProjectRoot "config\supported_extensions.txt"
 
-if (Test-Path $ContextMenuKey) {
-    try {
-        Remove-Item -Path $ContextMenuKey -Recurse -Force -ErrorAction Stop
-        Write-Host "    Context menu removed" -ForegroundColor Green
-    } catch {
-        Write-Host "    WARNING: Could not remove context menu: $($_.Exception.Message)" -ForegroundColor Yellow
-    }
-} else {
-    Write-Host "    Context menu not found (already removed)" -ForegroundColor Gray
+$SupportedExtensions = @()
+if (Test-Path $ConfigFile) {
+    $SupportedExtensions = @(
+        Get-Content $ConfigFile |
+        Where-Object { $_ -match '^\.[a-z0-9]+$' } |
+        ForEach-Object { $_.Trim() }
+    )
+    Write-Host "    Loaded $($SupportedExtensions.Count) extensions for cleanup" -ForegroundColor Cyan
 }
 
-# Rimuovi anche da HKCR se esiste (fallback per installazioni precedenti)
+$removedCount = 0
+
+# 1. Remove folder context menu
+$FolderMenuKey = Join-Path $RegistryBase "Directory\shell\$ApplicationName"
+if (Test-Path $FolderMenuKey) {
+    try {
+        Remove-Item -Path $FolderMenuKey -Recurse -Force -ErrorAction Stop
+        Write-Host "    Folder menu removed" -ForegroundColor Green
+        $removedCount++
+    } catch {
+        Write-Host "    WARNING: Folder menu: $($_.Exception.Message)" -ForegroundColor Yellow
+    }
+}
+
+# 2. Remove background context menu
+$BackgroundMenuKey = Join-Path $RegistryBase "Directory\Background\shell\$ApplicationName"
+if (Test-Path $BackgroundMenuKey) {
+    try {
+        Remove-Item -Path $BackgroundMenuKey -Recurse -Force -ErrorAction Stop
+        Write-Host "    Background menu removed" -ForegroundColor Green
+        $removedCount++
+    } catch {
+        Write-Host "    WARNING: Background menu: $($_.Exception.Message)" -ForegroundColor Yellow
+    }
+}
+
+# 3. Remove file type menus
+foreach ($ext in $SupportedExtensions) {
+    $FileTypeMenuKey = Join-Path $RegistryBase "SystemFileAssociations\$ext\shell\$ApplicationName"
+    if (Test-Path $FileTypeMenuKey) {
+        try {
+            Remove-Item -Path $FileTypeMenuKey -Recurse -Force -ErrorAction Stop
+            $removedCount++
+        } catch {
+            Write-Host "    WARNING: Failed to remove $ext menu" -ForegroundColor Yellow
+        }
+    }
+}
+if ($SupportedExtensions.Count -gt 0) {
+    Write-Host "    File type menus removed ($($SupportedExtensions.Count) extensions)" -ForegroundColor Green
+}
+
+# 4. Remove multi-selection menu
+$MultiSelectMenuKey = Join-Path $RegistryBase "*\shell\$ApplicationName"
+if (Test-Path $MultiSelectMenuKey) {
+    try {
+        Remove-Item -Path $MultiSelectMenuKey -Recurse -Force -ErrorAction Stop
+        Write-Host "    Multi-selection menu removed" -ForegroundColor Green
+        $removedCount++
+    } catch {
+        Write-Host "    WARNING: Multi-selection menu: $($_.Exception.Message)" -ForegroundColor Yellow
+    }
+}
+
+# 5. Legacy HKCR cleanup
 $HKCRContextMenu = "Registry::HKEY_CLASSES_ROOT\Directory\shell\$ApplicationName"
 if (Test-Path $HKCRContextMenu) {
     try {
         Remove-Item -Path $HKCRContextMenu -Recurse -Force -ErrorAction Stop
-        Write-Host "    Legacy context menu removed (HKCR)" -ForegroundColor Green
+        Write-Host "    Legacy menu removed (HKCR)" -ForegroundColor Green
+        $removedCount++
     } catch {
-        Write-Host "    WARNING: Could not remove legacy context menu" -ForegroundColor Yellow
+        Write-Host "    WARNING: Legacy menu: $($_.Exception.Message)" -ForegroundColor Yellow
     }
 }
+
+Write-Host "    Total menus removed: $removedCount" -ForegroundColor Cyan
 
 # =========================
 # Rimozione file eseguibile

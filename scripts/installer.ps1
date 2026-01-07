@@ -82,28 +82,73 @@ if (-not (Test-Path $TargetExecutablePath)) {
 
 Write-Host ">>> Configuring context menu..."
 
-$ContextMenuKey = Join-Path $RegistryBase "Directory\shell\$ApplicationName"
-$CommandKey = Join-Path $ContextMenuKey "command"
+# Load supported file extensions from config file
+$ConfigFile = Join-Path $ProjectRoot "config\supported_extensions.txt"
+if (-not (Test-Path $ConfigFile)) {
+    throw "Configuration file not found: $ConfigFile"
+}
 
-New-Item -Path $ContextMenuKey -Force | Out-Null
-New-Item -Path $CommandKey -Force | Out-Null
+$SupportedExtensions = @(
+    Get-Content $ConfigFile |
+    Where-Object { $_ -match '^\.[a-z0-9]+$' } |
+    ForEach-Object { $_.Trim() }
+)
 
-Set-ItemProperty `
-    -Path $ContextMenuKey `
-    -Name "(Default)" `
-    -Value "Merge text files here"
+Write-Host "    Loaded $($SupportedExtensions.Count) file extensions from config" -ForegroundColor Cyan
 
-Set-ItemProperty `
-    -Path $ContextMenuKey `
-    -Name "Icon" `
-    -Value $TargetExecutablePath
+# 1. Context menu for folders (right-click on folder)
+$FolderMenuKey = Join-Path $RegistryBase "Directory\shell\$ApplicationName"
+$FolderCommandKey = Join-Path $FolderMenuKey "command"
 
-$CommandValue = "`"$TargetExecutablePath`" `"%1`""
+New-Item -Path $FolderMenuKey -Force | Out-Null
+New-Item -Path $FolderCommandKey -Force | Out-Null
 
-Set-ItemProperty `
-    -Path $CommandKey `
-    -Name "(Default)" `
-    -Value $CommandValue
+Set-ItemProperty -Path $FolderMenuKey -Name "(Default)" -Value "Merge text files here"
+Set-ItemProperty -Path $FolderMenuKey -Name "Icon" -Value "$TargetExecutablePath,0"
+Set-ItemProperty -Path $FolderCommandKey -Name "(Default)" -Value "`"$TargetExecutablePath`" `"%1`""
+
+Write-Host "    Folder context menu: OK" -ForegroundColor Green
+
+# 2. Context menu for folder background (right-click inside folder)
+$BackgroundMenuKey = Join-Path $RegistryBase "Directory\Background\shell\$ApplicationName"
+$BackgroundCommandKey = Join-Path $BackgroundMenuKey "command"
+
+New-Item -Path $BackgroundMenuKey -Force | Out-Null
+New-Item -Path $BackgroundCommandKey -Force | Out-Null
+
+Set-ItemProperty -Path $BackgroundMenuKey -Name "(Default)" -Value "Merge text files here"
+Set-ItemProperty -Path $BackgroundMenuKey -Name "Icon" -Value "$TargetExecutablePath,0"
+Set-ItemProperty -Path $BackgroundCommandKey -Name "(Default)" -Value "`"$TargetExecutablePath`" `"%V`""
+
+Write-Host "    Background context menu: OK" -ForegroundColor Green
+
+# 3. Context menu for each supported file type
+foreach ($ext in $SupportedExtensions) {
+    $FileTypeMenuKey = Join-Path $RegistryBase "SystemFileAssociations\$ext\shell\$ApplicationName"
+    $FileTypeCommandKey = Join-Path $FileTypeMenuKey "command"
+
+    New-Item -Path $FileTypeMenuKey -Force | Out-Null
+    New-Item -Path $FileTypeCommandKey -Force | Out-Null
+
+    Set-ItemProperty -Path $FileTypeMenuKey -Name "(Default)" -Value "Merge with other text files"
+    Set-ItemProperty -Path $FileTypeMenuKey -Name "Icon" -Value "$TargetExecutablePath,0"
+    Set-ItemProperty -Path $FileTypeCommandKey -Name "(Default)" -Value "`"$TargetExecutablePath`" `"%1`""
+}
+
+Write-Host "    File type menus: OK ($($SupportedExtensions.Count) extensions)" -ForegroundColor Green
+
+# 4. Context menu for multiple selection (files and/or folders)
+$MultiSelectMenuKey = Join-Path $RegistryBase "*\shell\$ApplicationName"
+$MultiSelectCommandKey = Join-Path $MultiSelectMenuKey "command"
+
+New-Item -Path $MultiSelectMenuKey -Force | Out-Null
+New-Item -Path $MultiSelectCommandKey -Force | Out-Null
+
+Set-ItemProperty -Path $MultiSelectMenuKey -Name "(Default)" -Value "Merge selected text files"
+Set-ItemProperty -Path $MultiSelectMenuKey -Name "Icon" -Value "$TargetExecutablePath,0"
+Set-ItemProperty -Path $MultiSelectCommandKey -Name "(Default)" -Value "`"$TargetExecutablePath`" `"%1`""
+
+Write-Host "    Multi-selection menu: OK" -ForegroundColor Green
 
 # =========================
 # Conferma finale

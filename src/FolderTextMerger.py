@@ -14,7 +14,7 @@ from typing import Iterable, List, Set, Optional
 # =========================
 
 APP_NAME = "FolderTextMerger"
-VERSION = "1.1.0-rc6"
+VERSION = "1.1.0-rc8"
 COPYRIGHT = "Copyright (c) 2026 FolderTextMerger. All rights reserved."
 
 # =========================
@@ -24,7 +24,8 @@ COPYRIGHT = "Copyright (c) 2026 FolderTextMerger. All rights reserved."
 DEFAULT_MAX_FILE_SIZE_MB = 10
 TEXT_DETECTION_THRESHOLD = 0.85
 BINARY_SAMPLE_SIZE = 8192
-LOG_RETENTION_DAYS = 7
+LOG_RETENTION_DAYS = 30  # Keep logs for 30 days, then auto-delete
+DEV_MODE = False  # Set to True for detailed file processing logs
 
 EXIT_OK = 0
 EXIT_NO_ARGUMENTS = 1
@@ -316,27 +317,32 @@ def main() -> None:
                 )
 
                 if not is_supported_file(file_path):
-                    logging.debug("Skipped unsupported file: %s", relative_name)
+                    if DEV_MODE:
+                        logging.debug("Skipped unsupported file: %s", relative_name)
                     continue
 
                 if file_path.stat().st_size > max_size_bytes:
-                    logging.debug("Skipped oversized file: %s", relative_name)
+                    if DEV_MODE:
+                        logging.debug("Skipped oversized file: %s", relative_name)
                     continue
 
                 if not is_probably_text_file(file_path):
-                    logging.debug("Skipped binary-like file: %s", relative_name)
+                    if DEV_MODE:
+                        logging.debug("Skipped binary-like file: %s", relative_name)
                     continue
 
                 content = read_text_safely(file_path)
                 if content is None:
-                    logging.debug("Unreadable file: %s", relative_name)
+                    if DEV_MODE:
+                        logging.debug("Unreadable file: %s", relative_name)
                     continue
 
                 temporary_file.write(f"\n=== {relative_name} ===\n")
                 temporary_file.write(content.rstrip())
                 temporary_file.write("\n")
 
-                logging.debug("Merged file: %s", relative_name)
+                if DEV_MODE:
+                    logging.debug("Merged file: %s", relative_name)
 
             except Exception as exception:
                 logging.error(
@@ -350,6 +356,20 @@ def main() -> None:
 
     print(f"{FINAL_MESSAGE}: {output_file}")
     logging.info("Process completed successfully: %s", output_file)
+
+    # Show Windows notification (silent mode)
+    try:
+        from win10toast import ToastNotifier
+        toaster = ToastNotifier()
+        toaster.show_toast(
+            "FolderTextMerger",
+            f"Merged {len(selected_files)} files successfully!\n{output_file.name}",
+            duration=5,
+            threaded=True
+        )
+    except:
+        pass  # Silently fail if notification library not available
+
     sys.exit(EXIT_OK)
 
 # =========================
