@@ -14,7 +14,7 @@ from typing import Iterable, List, Set, Optional
 # =========================
 
 APP_NAME = "FolderTextMerger"
-VERSION = "1.1.0-rc5"
+VERSION = "1.1.0-rc6"
 COPYRIGHT = "Copyright (c) 2026 FolderTextMerger. All rights reserved."
 
 # =========================
