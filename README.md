@@ -55,8 +55,8 @@ FolderTextMerger/
 
 This will:
 - Install `FolderTextMerger.exe` to `%LOCALAPPDATA%\FolderTextMerger\` (user) or `C:\Program Files\FolderTextMerger\` (admin)
-- Add "Merge text files here" to Windows Explorer context menu
-- Create log directory at `%LOCALAPPDATA%\FolderTextMerger\logs\`
+- Add context menu to Windows Explorer (4 locations: folders, files, multi-select, background)
+- Create log directory at `%LOCALAPPDATA%\FolderTextMerger\logs\` (30 days retention)
 
 #### Manual Installation
 
@@ -177,19 +177,59 @@ python src/FolderTextMerger.py tests/testiamo/test_real_scenario -o test_output.
 python tests/testiamo/comprehensive_test.py
 ```
 
+## 📁 Important Paths
+
+### Application Files
+- **Executable**: `C:\Users\{username}\AppData\Local\FolderTextMerger\FolderTextMerger.exe`
+- **Logs**: `C:\Users\{username}\AppData\Local\FolderTextMerger\logs\`
+
+### Log Files
+Current logs are stored at:
+```
+C:\Users\{YourUsername}\AppData\Local\FolderTextMerger\logs\debug.log
+```
+
+Quick access PowerShell commands:
+```powershell
+# Open log file
+notepad $env:LOCALAPPDATA\FolderTextMerger\logs\debug.log
+
+# Open log folder
+explorer $env:LOCALAPPDATA\FolderTextMerger\logs
+```
+
+### Log Retention
+- **Rotation**: Daily (automatic)
+- **Retention**: 30 days (auto-cleanup)
+- **Format**: `debug.log` (current) + `debug.log.YYYY-MM-DD` (archived)
+
+### What Gets Logged
+✅ Always logged:
+- Application start/stop
+- Arguments received
+- Total files processed
+- Errors and exceptions
+- Output file path
+
+🔧 Development mode only (DEV_MODE=True):
+- Individual file processing
+- Files skipped (with reason)
+- Detailed validation steps
+
 ## 🐛 Troubleshooting
 
-### Issue: "The file does not have an app associated with it"
+### Issue: Application doesn't work
+1. Check logs: `%LOCALAPPDATA%\FolderTextMerger\logs\debug.log`
+2. Verify executable exists: `%LOCALAPPDATA%\FolderTextMerger\FolderTextMerger.exe`
+3. Restart Windows Explorer (Task Manager → Windows Explorer → Restart)
 
-**Solution**: This indicates a corrupt PE header. Use Python 3.12 instead of 3.13 (see [RECOVERY_REPORT.md](docs/RECOVERY_REPORT.md)).
+### Issue: Context menu not visible
+1. Restart Windows Explorer
+2. Reinstall: `.\scripts\rebuild-install.ps1`
+3. Check registry: `Get-ChildItem 'HKCU:\Software\Classes\Directory\shell\FolderTextMerger'`
 
-### Issue: File skipped as "binary-like"
-
-**Solution**: File contains <85% ASCII characters. This is intentional to avoid binary files. Add more ASCII text or adjust `TEXT_DETECTION_THRESHOLD` in source.
-
-### Issue: No files found
-
-**Solution**: Check debug log at `%TEMP%\FolderTextMerger_Debug.log` for details on which paths were scanned.
+### Issue: "output-*.txt" files are skipped
+This is intentional to prevent merging previous output files. Output files are excluded by name pattern.
 
 ## 📄 License
 
