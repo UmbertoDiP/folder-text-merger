@@ -383,15 +383,11 @@ def main() -> None:
 
     os.replace(temporary_path, output_file)
 
-    # Print summary to console
-    print(f"\n{FINAL_MESSAGE}: {output_file}")
-    print(f"\nSummary:")
-    print(f"  Files merged: {len(selected_files)}")
-    print(f"  Output size: {output_file.stat().st_size / (1024*1024):.2f} MB")
-    print(f"  Output location: {output_file.parent}")
-
+    # Log completion with summary (no console output in windowed mode)
     logging.info("Process completed successfully: %s", output_file)
     logging.info("Total files merged: %d", len(selected_files))
+    logging.info("Output size: %.2f MB", output_file.stat().st_size / (1024*1024))
+    logging.info("Output location: %s", output_file.parent)
 
     # Show Windows notification (with full error logging)
     # Note: win10toast is optional and may have internal issues on some systems
@@ -426,25 +422,8 @@ def main() -> None:
         logging.debug("Notification exception type: %s", type(notify_err).__name__)
         logging.debug("Notification exception traceback:\n%s", traceback.format_exc())
 
-    # Pause on Windows before exit to show user the result
-    # This prevents the console window from closing immediately when launched from context menu
-    if sys.platform == "win32":
-        logging.debug("Windows platform detected - pausing before exit")
-        try:
-            import msvcrt
-            print("\n" + "="*60)
-            print("Operation completed successfully!")
-            print("="*60)
-            print("\nPress any key to close this window...")
-            logging.debug("Waiting for user input to close...")
-            msvcrt.getch()
-            logging.debug("User pressed key - exiting")
-        except Exception as pause_error:
-            import time
-            logging.warning("Could not wait for user input: %s", pause_error)
-            print("\nClosing in 3 seconds...")
-            time.sleep(3)
-
+    # Exit silently (no console pause needed in windowed mode)
+    logging.debug("Application completed - exiting silently")
     sys.exit(EXIT_OK)
 
 # =========================
