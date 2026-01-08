@@ -137,18 +137,10 @@ foreach ($ext in $SupportedExtensions) {
 
 Write-Host "    File type menus: OK ($($SupportedExtensions.Count) extensions)" -ForegroundColor Green
 
-# 4. Context menu for multiple selection (files and/or folders)
-$MultiSelectMenuKey = Join-Path $RegistryBase "*\shell\$ApplicationName"
-$MultiSelectCommandKey = Join-Path $MultiSelectMenuKey "command"
-
-New-Item -Path $MultiSelectMenuKey -Force | Out-Null
-New-Item -Path $MultiSelectCommandKey -Force | Out-Null
-
-Set-ItemProperty -Path $MultiSelectMenuKey -Name "(Default)" -Value "Merge selected text files"
-Set-ItemProperty -Path $MultiSelectMenuKey -Name "Icon" -Value "$TargetExecutablePath,0"
-Set-ItemProperty -Path $MultiSelectCommandKey -Name "(Default)" -Value "`"$TargetExecutablePath`" `"%1`""
-
-Write-Host "    Multi-selection menu: OK" -ForegroundColor Green
+# 4. Multi-selection NOT supported
+# Note: Windows doesn't support passing multiple selected files via *\shell
+# Users should right-click on the containing folder or inside folder background instead
+Write-Host "    Multi-selection menu: SKIPPED (use folder menu instead)" -ForegroundColor Yellow
 
 # =========================
 # Conferma finale
