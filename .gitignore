@@ -1,51 +1,23 @@
-# Python
+# Test folders
+direct-test/
+test_summary/
+
+# Output files
+output-*.txt
+
+# Python cache
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
+*.pyc
+*.pyo
 
-# Virtual Environment
-venv/
-env/
-ENV/
-.venv
-
-# PyInstaller
+# Build artifacts
 build/
 dist/
 *.spec
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# OS
-.DS_Store
-Thumbs.db
-desktop.ini
-
 # Logs
 *.log
 
-# Test outputs
-tests/testiamo/test_real_scenario/output*.txt
-tests/testiamo/test_real_scenario/real_output.txt
-tests/testiamo/edge_cases/edge_output.txt
-tests/testiamo/edge_cases/unicode_output.txt
-tests/testiamo/stress_test/*.txt
-tests/testiamo/size_limit/output*.txt
-tests/testiamo/size_limit/size_output*.txt
-tests/testiamo/context_menu_test/output*.txt
-tests/testiamo/*.txt
-test_output.txt
-
-# Backup folder
-backup/
-
-# Temporary files
-*.tmp
-*.bak
+# IDE
+.vscode/
+.idea/
