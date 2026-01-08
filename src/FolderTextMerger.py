@@ -14,7 +14,7 @@ from typing import Iterable, List, Set, Optional
 # =========================
 
 APP_NAME = "FolderTextMerger"
-VERSION = "1.0.4"
+VERSION = "1.0.4-rc1"
 COPYRIGHT = "Copyright (c) 2026 FolderTextMerger. All rights reserved."
 
 # =========================
@@ -288,19 +288,41 @@ def main() -> None:
     selected_files = expand_input_paths(args.paths)
 
     if not selected_files:
-        logging.error("No valid files found")
+        logging.error("No valid text files found in provided paths")
+        logging.debug("Searched paths: %s", args.paths)
+        logging.debug("Total paths provided: %d", len(args.paths))
+        print(f"\nERROR: No valid text files found in the specified location(s).")
+        print(f"Searched: {', '.join(str(p) for p in args.paths)}")
         sys.exit(EXIT_NO_FILES)
 
+    # Determine base directory for relative paths (where files are located)
     if len(selected_files) > 1:
         base_directory = Path(os.path.commonpath(selected_files))
     else:
         base_directory = selected_files[0].parent
 
-    output_file = (
-        args.output.resolve()
-        if args.output
-        else base_directory / f"output-{base_directory.name}-{datetime.now().strftime('%Y%m%d-%H%M%S')}.txt"
-    )
+    # Determine output directory: always use parent of base_directory
+    # This ensures output is created one level up from where user clicked
+    if args.output:
+        output_file = args.output.resolve()
+        output_directory = output_file.parent
+    else:
+        # Get the first argument path (what user clicked on)
+        first_arg_path = Path(args.paths[0]).resolve()
+
+        # If user clicked on a directory, use its parent for output
+        # If user clicked on a file, use its parent's parent for output
+        if first_arg_path.is_dir():
+            output_directory = first_arg_path.parent
+            folder_name = first_arg_path.name
+        else:
+            output_directory = first_arg_path.parent.parent
+            folder_name = first_arg_path.parent.name
+
+        output_file = output_directory / f"output-{folder_name}-{datetime.now().strftime('%Y%m%d-%H%M%S')}.txt"
+
+    logging.debug("Output will be created in: %s", output_directory)
+    logging.debug("Output file: %s", output_file)
 
     max_size_bytes = args.max_size_mb * 1024 * 1024
 
@@ -361,21 +383,67 @@ def main() -> None:
 
     os.replace(temporary_path, output_file)
 
-    print(f"{FINAL_MESSAGE}: {output_file}")
-    logging.info("Process completed successfully: %s", output_file)
+    # Print summary to console
+    print(f"\n{FINAL_MESSAGE}: {output_file}")
+    print(f"\nSummary:")
+    print(f"  Files merged: {len(selected_files)}")
+    print(f"  Output size: {output_file.stat().st_size / (1024*1024):.2f} MB")
+    print(f"  Output location: {output_file.parent}")
 
-    # Show Windows notification (silent mode)
+    logging.info("Process completed successfully: %s", output_file)
+    logging.info("Total files merged: %d", len(selected_files))
+
+    # Show Windows notification (with full error logging)
+    # Note: win10toast is optional and may have internal issues on some systems
     try:
-        from win10toast import ToastNotifier
-        toaster = ToastNotifier()
-        toaster.show_toast(
-            "FolderTextMerger",
-            f"Merged {len(selected_files)} files successfully!\n{output_file.name}",
-            duration=5,
-            threaded=True
-        )
-    except:
-        pass  # Silently fail if notification library not available
+        import warnings
+        with warnings.catch_warnings(record=True) as warning_list:
+            warnings.simplefilter("always")
+            from win10toast import ToastNotifier
+            toaster = ToastNotifier()
+            toaster.show_toast(
+                "FolderTextMerger",
+                f"Merged {len(selected_files)} files successfully!\n{output_file.name}",
+                duration=5,
+                threaded=False, # Non-threaded to capture all exceptions
+                icon_path=None  # Explicitly disable icon lookup to prevent PyInstaller crash
+            )
+
+            # Log any warnings from win10toast
+            if warning_list:
+                for warning_item in warning_list:
+                    logging.debug("win10toast warning: %s - %s",
+                                 warning_item.category.__name__,
+                                 warning_item.message)
+
+        logging.debug("Windows notification completed (may have shown)")
+    except ImportError as import_err:
+        logging.warning("win10toast library not available: %s", import_err)
+        logging.debug("Notification skipped - library missing (non-critical)")
+    except Exception as notify_err:
+        import traceback
+        logging.warning("Windows notification failed (non-critical): %s", notify_err)
+        logging.debug("Notification exception type: %s", type(notify_err).__name__)
+        logging.debug("Notification exception traceback:\n%s", traceback.format_exc())
+
+    # Pause on Windows before exit to show user the result
+    # This prevents the console window from closing immediately when launched from context menu
+    if sys.platform == "win32":
+        logging.debug("Windows platform detected - pausing before exit")
+        try:
+            import msvcrt
+            print("\n" + "="*60)
+            print("Operation completed successfully!")
+            print("="*60)
+            print("\nPress any key to close this window...")
+            logging.debug("Waiting for user input to close...")
+            msvcrt.getch()
+            logging.debug("User pressed key - exiting")
+        except Exception as pause_error:
+            import time
+            logging.warning("Could not wait for user input: %s", pause_error)
+            print("\nClosing in 3 seconds...")
+            time.sleep(3)
 
     sys.exit(EXIT_OK)
 
@@ -387,10 +455,15 @@ if __name__ == "__main__":
     try:
         logging.debug("MAIN ENTRY POINT: Starting application")
         logging.debug("Arguments received: %s", sys.argv)
+        logging.debug("Python version: %s", sys.version)
+        logging.debug("Platform: %s", sys.platform)
         main()
         logging.debug("MAIN COMPLETED: Application finished successfully")
     except SystemExit as sys_exit:
-        logging.debug("System exit called with code: %s", sys_exit.code)
+        exit_code = sys_exit.code if sys_exit.code is not None else 0
+        logging.debug("System exit called with code: %s", exit_code)
+        if exit_code != 0:
+            logging.warning("Application exited with non-zero code: %s", exit_code)
         raise
     except Exception as fatal_exception:
         import traceback
