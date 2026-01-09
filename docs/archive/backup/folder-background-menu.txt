@@ -1,0 +1,11 @@
+AnyCode
+cmd
+Crea Lista di File
+Crea Lista File
+git_gui
+git_shell
+Powershell
+Unisci e Copia Testi
+Unisci e Esporta Testi
+VSCode
+WSL

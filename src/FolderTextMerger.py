@@ -1,5 +1,6 @@
 ﻿import os
 import sys
+import shutil
 import locale
 import argparse
 import logging
@@ -14,7 +15,7 @@ from typing import Iterable, List, Set, Optional
 # =========================
 
 APP_NAME = "FolderTextMerger"
-VERSION = "1.0.4"
+VERSION = "1.0.5"
 COPYRIGHT = "Copyright (c) 2026 FolderTextMerger. All rights reserved."
 
 # =========================
@@ -443,7 +444,8 @@ def main() -> None:
         temporary_file.write("END OF EXTRACTION SUMMARY\n")
         temporary_file.write("="*80 + "\n")
 
-    os.replace(temporary_path, output_file)
+    # Use shutil.move instead of os.replace to support cross-drive moves
+    shutil.move(temporary_path, output_file)
 
     # Log completion with summary (no console output in windowed mode)
     logging.info("Process completed successfully: %s", output_file)

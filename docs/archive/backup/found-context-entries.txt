@@ -1,0 +1,33 @@
+﻿
+
+Name     : FolderTextMerger
+Location : Registry::HKEY_CLASSES_ROOT\Directory\shell
+FullPath : Microsoft.PowerShell.Core\Registry::HKEY_CLASSES_ROOT\Directory\shell\FolderTextMerger
+
+Name     : Crea Lista di File
+Location : Registry::HKEY_CLASSES_ROOT\Directory\Background\shell
+FullPath : Microsoft.PowerShell.Core\Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\Crea Lista di File
+
+Name     : Crea Lista File
+Location : Registry::HKEY_CLASSES_ROOT\Directory\Background\shell
+FullPath : Microsoft.PowerShell.Core\Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\Crea Lista File
+
+Name     : Unisci e Copia Testi
+Location : Registry::HKEY_CLASSES_ROOT\Directory\Background\shell
+FullPath : Microsoft.PowerShell.Core\Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\Unisci e Copia Testi
+
+Name     : Unisci e Esporta Testi
+Location : Registry::HKEY_CLASSES_ROOT\Directory\Background\shell
+FullPath : Microsoft.PowerShell.Core\Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\Unisci e Esporta Testi
+
+Name     : FolderTextMerger
+Location : Registry::HKEY_CURRENT_USER\Software\Classes\Directory\shell
+FullPath : Microsoft.PowerShell.Core\Registry::HKEY_CURRENT_USER\Software\Classes\Directory\shell\FolderTextMerger
+
+Name     : Crea Lista File
+Location : Registry::HKEY_CURRENT_USER\Software\Classes\Directory\Background\shell
+FullPath : Microsoft.PowerShell.Core\Registry::HKEY_CURRENT_USER\Software\Classes\Directory\Background\shell\Crea 
+           Lista File
+
+
+

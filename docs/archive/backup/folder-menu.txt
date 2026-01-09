@@ -1,0 +1,15 @@
+AddToPlaylistVLC
+AnyCode
+ArubaSign
+ArubaSignPlatform
+cmd
+find
+FolderTextMerger
+git_gui
+git_shell
+PlayWithVLC
+Powershell
+UpdateEncryptionSettings
+VSCode
+WinDirStat
+WSL

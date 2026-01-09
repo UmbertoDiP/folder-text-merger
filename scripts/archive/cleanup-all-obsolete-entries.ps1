@@ -16,7 +16,7 @@ if (-not (Test-Path $backupFolder)) {
     New-Item -ItemType Directory -Path $backupFolder -Force | Out-Null
 }
 
-# Lista COMPLETA di tutte le voci da rimuovere (dalla scansione precedente + immagine utente)
+# Lista COMPLETA di tutte le voci da rimuovere
 $entriesToRemove = @(
     # Voci FolderTextMerger
     @{
@@ -107,16 +107,16 @@ foreach ($entry in $entriesToRemove) {
             Start-Process -FilePath "cmd.exe" -ArgumentList "/c $regCommand" -Wait -NoNewWindow 2>&1 | Out-Null
 
             if (Test-Path $backupFile) {
-                Write-Host "    ✓ Backup salvato" -ForegroundColor Green
+                Write-Host "    OK Backup salvato" -ForegroundColor Green
             }
 
             # Rimuovi
             Remove-Item -Path $regPath -Recurse -Force -ErrorAction SilentlyContinue
             if (-not (Test-Path $regPath)) {
-                Write-Host "    ✓ RIMOSSA" -ForegroundColor Green
+                Write-Host "    OK RIMOSSA" -ForegroundColor Green
                 $totalRemoved++
             } else {
-                Write-Host "    ✗ ERRORE: impossibile rimuovere" -ForegroundColor Red
+                Write-Host "    ERRORE impossibile rimuovere" -ForegroundColor Red
             }
         } else {
             $totalNotFound++
@@ -134,23 +134,12 @@ Write-Host "Chiavi non trovate: $totalNotFound" -ForegroundColor Gray
 Write-Host ""
 
 if ($totalRemoved -gt 0) {
-    Write-Host "⚠️  IMPORTANTE: Riavvia Esplora Risorse per vedere le modifiche:" -ForegroundColor Yellow
-    Write-Host "   Task Manager → Esplora risorse → Riavvia" -ForegroundColor White
+    Write-Host "IMPORTANTE: Riavvia Esplora Risorse per vedere le modifiche" -ForegroundColor Yellow
+    Write-Host "Task Manager -> Esplora risorse -> Riavvia" -ForegroundColor White
     Write-Host ""
     Write-Host "Backup salvati in: $backupFolder" -ForegroundColor Cyan
-    Write-Host ""
-
-    # Chiedi se riavviare Explorer automaticamente
-    $response = Read-Host "Vuoi riavviare Esplora Risorse ora? (s/n)"
-    if ($response -eq "s" -or $response -eq "S") {
-        Write-Host "Riavvio Esplora Risorse..." -ForegroundColor Yellow
-        taskkill /F /IM explorer.exe 2>&1 | Out-Null
-        Start-Sleep -Seconds 2
-        Start-Process explorer.exe
-        Write-Host "✓ Esplora Risorse riavviato" -ForegroundColor Green
-    }
 }
 
 Write-Host ""
-Write-Host "Operazione completata!" -ForegroundColor Green
+Write-Host "Operazione completata" -ForegroundColor Green
 Write-Host ""

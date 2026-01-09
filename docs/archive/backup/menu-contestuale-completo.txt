@@ -1,0 +1,73 @@
+================================================================================
+ANALISI MENU CONTESTUALE WINDOWS - ELENCO COMPLETO
+Data: 2026-01-08
+================================================================================
+
+================================================================================
+GRUPPO 1: MENU CARTELLE (Click destro su una cartella)
+================================================================================
+
+1.  AddToPlaylistVLC
+2.  AnyCode
+3.  ArubaSign
+4.  ArubaSignPlatform
+5.  cmd
+6.  find
+7.  FolderTextMerger
+8.  git_gui
+9.  git_shell
+10. PlayWithVLC
+11. Powershell
+12. UpdateEncryptionSettings
+13. VSCode
+14. WinDirStat
+15. WSL
+
+================================================================================
+GRUPPO 2: MENU BACKGROUND CARTELLE (Click destro su spazio vuoto dentro cartella)
+================================================================================
+
+1.  AnyCode
+2.  cmd
+3.  Crea Lista di File
+4.  Crea Lista File
+5.  git_gui
+6.  git_shell
+7.  Powershell
+8.  Unisci e Copia Testi
+9.  Unisci e Esporta Testi
+10. VSCode
+11. WSL
+
+================================================================================
+GRUPPO 3: MENU FILE (Click destro su file generico)
+================================================================================
+
+[Nota: Questo gruppo contiene voci specifiche per ogni estensione di file.
+ I risultati ottenuti mostrano "shell" ripetuto perché esistono centinaia
+ di estensioni diverse (.txt, .pdf, .jpg, .exe, etc.) ognuna con proprie voci.
+
+ Per vedere le voci specifiche per un tipo di file, specificare l'estensione.]
+
+================================================================================
+ISTRUZIONI PER RIMOZIONE
+================================================================================
+
+Per rimuovere una voce dal menu contestuale:
+
+1. Aprire regedit (Windows + R, digitare "regedit")
+
+2. Per CARTELLE, navigare a:
+   HKEY_CLASSES_ROOT\Directory\shell\[NOME_VOCE]
+
+3. Per BACKGROUND CARTELLE, navigare a:
+   HKEY_CLASSES_ROOT\Directory\Background\shell\[NOME_VOCE]
+
+4. Click destro sulla chiave → Elimina
+
+5. Riavviare explorer.exe o fare logout/login
+
+BACKUP CONSIGLIATO: Prima di eliminare, click destro sulla chiave → Esporta
+(salvare come file .reg per eventuale ripristino)
+
+================================================================================
