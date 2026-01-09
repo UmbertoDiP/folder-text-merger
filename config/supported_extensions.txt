@@ -1,4 +1,4 @@
-# FolderTextMerger - Supported File Extensions
+# Folder2Text - Supported File Extensions
 # This file defines ALL file types that can be merged
 # Used by: Python app, PowerShell installer, documentation
 
