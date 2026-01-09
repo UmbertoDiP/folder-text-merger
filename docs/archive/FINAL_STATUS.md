@@ -47,7 +47,7 @@
 
 | Property | Value |
 |----------|-------|
-| Display Text | "Merge text files here" |
+| Display Text | "Folder2Text – Convert folder to text" |
 | Icon Source | FolderTextMerger.exe |
 | Command | `"C:\...\FolderTextMerger.exe" "%1"` |
 | Scope | User-level (non-admin) |
@@ -55,7 +55,7 @@
 ### How to Use
 1. Open **File Explorer**
 2. **Right-click** on any folder
-3. Look for **"Merge text files here"** with blue circle icon
+3. Look for **"Folder2Text – Convert folder to text"** with blue circle icon
 4. Click to merge all text files in that folder
 
 ---
@@ -260,7 +260,7 @@ Right-click folder → Generic menu items
 
 ### After
 ```
-Right-click folder → "Merge text files here" [🔵 icon]
+Right-click folder → "Folder2Text – Convert folder to text" [🔵 icon]
                    ↓
                    Instant merged output file with timestamp
 ```

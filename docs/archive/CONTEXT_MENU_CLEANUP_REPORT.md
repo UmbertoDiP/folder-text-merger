@@ -71,7 +71,7 @@ Rimuovere voci obsolete/duplicate dal menu contestuale Windows e creare un unins
 # Registra menu contestuale
 $ContextMenuKey = Join-Path $RegistryBase "Directory\shell\$ApplicationName"
 New-Item -Path $ContextMenuKey -Force
-Set-ItemProperty -Path $ContextMenuKey -Name "(Default)" -Value "Merge text files here"
+Set-ItemProperty -Path $ContextMenuKey -Name "(Default)" -Value "Folder2Text – Convert folder to text"
 Set-ItemProperty -Path $ContextMenuKey -Name "Icon" -Value $TargetExecutablePath
 ```
 

@@ -2,7 +2,7 @@
 
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.0.6-brightgreen.svg)]()
+[![Version](https://img.shields.io/badge/version-1.0.7-brightgreen.svg)]()
 
 Merge multiple text files from folders into a single output file. Perfect for sharing code with AI assistants, code reviews, and documentation consolidation.
 
@@ -21,16 +21,16 @@ Merge multiple text files from folders into a single output file. Perfect for sh
 
 ### Installation
 
-1. Download `Folder2Text-v1.0.6-Setup.zip`
+1. Download `Folder2Text-v1.0.7-Setup.zip`
 2. Extract all files
 3. Right-click **INSTALL.ps1** → "Run with PowerShell"
 4. Done! 🎉
 
 ### Usage
 
-**Option 1**: Right-click on a folder → "Merge text files here"
+**Option 1**: Right-click on a folder → "Folder2Text – Convert folder to text"
 
-**Option 2**: Right-click inside a folder (on background) → "Merge text files here"
+**Option 2**: Right-click inside a folder (on background) → "Folder2Text – Convert folder to text"
 
 **Option 3**: Right-click on text files → "Merge with other text files"
 
@@ -151,6 +151,6 @@ For issues or questions: [GitHub Issues](https://github.com/UmbertoDiP/folder-te
 
 ---
 
-**Version**: 1.0.6
+**Version**: 1.0.7
 **Status**: 🟢 Production Ready
 **Last Updated**: 2026-01-09

@@ -76,13 +76,13 @@ The installer registers **4 different context menu locations**:
 ### 1. Folder Context Menu
 - **Trigger**: Right-click on a folder
 - **Registry**: `HKCU:\Software\Classes\Directory\shell\FolderTextMerger`
-- **Display**: "Merge text files here"
+- **Display**: "Folder2Text – Convert folder to text"
 - **Action**: Merge all supported files in that folder
 
 ### 2. Folder Background Menu
 - **Trigger**: Right-click in empty space inside a folder
 - **Registry**: `HKCU:\Software\Classes\Directory\Background\shell\FolderTextMerger`
-- **Display**: "Merge text files here"
+- **Display**: "Folder2Text – Convert folder to text"
 - **Action**: Merge all supported files in current folder
 
 ### 3. File Type Menus (65 extensions)

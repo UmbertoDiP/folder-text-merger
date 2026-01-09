@@ -15,7 +15,7 @@ from typing import Iterable, List, Set, Optional
 # =========================
 
 APP_NAME = "Folder2Text"
-VERSION = "1.0.6"
+VERSION = "1.0.7"
 COPYRIGHT = "Copyright (c) 2026 Folder2Text. All rights reserved."
 
 # =========================

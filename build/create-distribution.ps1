@@ -8,7 +8,7 @@ $ErrorActionPreference = "Stop"
 $ScriptDir = $PSScriptRoot
 $ProjectRoot = Split-Path $ScriptDir -Parent
 $DistribFolder = Join-Path $ProjectRoot "distribution"
-$Version = "1.0.6"
+$Version = "1.0.7"
 
 Write-Host ""
 Write-Host "=== Creating Distribution Package v$Version ===" -ForegroundColor Cyan
@@ -107,7 +107,7 @@ Write-Host "  - Configuring context menu..."
 New-Item -Path `$FolderMenuKey -Force | Out-Null
 New-Item -Path `$FolderCommandKey -Force | Out-Null
 
-Set-ItemProperty -Path `$FolderMenuKey -Name "(Default)" -Value "Merge text files here"
+Set-ItemProperty -Path `$FolderMenuKey -Name "(Default)" -Value "Folder2Text – Convert folder to text"
 Set-ItemProperty -Path `$FolderMenuKey -Name "Icon" -Value "`$TargetExe,0"
 Set-ItemProperty -Path `$FolderCommandKey -Name "(Default)" -Value "`$q`$TargetExe`$q `$q%1`$q"
 
@@ -118,7 +118,7 @@ Set-ItemProperty -Path `$FolderCommandKey -Name "(Default)" -Value "`$q`$TargetE
 New-Item -Path `$BackgroundMenuKey -Force | Out-Null
 New-Item -Path `$BackgroundCommandKey -Force | Out-Null
 
-Set-ItemProperty -Path `$BackgroundMenuKey -Name "(Default)" -Value "Merge text files here"
+Set-ItemProperty -Path `$BackgroundMenuKey -Name "(Default)" -Value "Folder2Text – Convert folder to text"
 Set-ItemProperty -Path `$BackgroundMenuKey -Name "Icon" -Value "`$TargetExe,0"
 Set-ItemProperty -Path `$BackgroundCommandKey -Name "(Default)" -Value "`$q`$TargetExe`$q `$q%V`$q"
 
@@ -153,7 +153,7 @@ Set-ItemProperty -Path `$UninstallKey -Name "DisplayName" -Value "Folder2Text"
 Set-ItemProperty -Path `$UninstallKey -Name "DisplayVersion" -Value `$Version
 Set-ItemProperty -Path `$UninstallKey -Name "Publisher" -Value "Folder2Text"
 Set-ItemProperty -Path `$UninstallKey -Name "InstallLocation" -Value `$InstallDir
-Set-ItemProperty -Path `$UninstallKey -Name "UninstallString" -Value "powershell.exe -ExecutionPolicy Bypass -File `$q`$UninstallScript`$q"
+Set-ItemProperty -Path `$UninstallKey -Name "UninstallString" -Value "powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -NonInteractive -File `$q`$UninstallScript`$q"
 Set-ItemProperty -Path `$UninstallKey -Name "DisplayIcon" -Value "`$TargetExe,0"
 Set-ItemProperty -Path `$UninstallKey -Name "NoModify" -Value 1 -Type DWord
 Set-ItemProperty -Path `$UninstallKey -Name "NoRepair" -Value 1 -Type DWord
@@ -183,67 +183,78 @@ Write-Host ">>> Creating uninstaller..."
 
 $UninstallerContent = @"
 # =========================
-# Folder2Text v$Version - Uninstaller
+# Folder2Text v$Version - Silent Uninstaller
 # =========================
+# Completely silent operation with deferred self-deletion
 
-Set-StrictMode -Version Latest
-`$ErrorActionPreference = "Stop"
-
+`$ErrorActionPreference = "SilentlyContinue"
 `$ApplicationName = "Folder2Text"
-
-Write-Host ""
-Write-Host "=== Folder2Text - Uninstaller ===" -ForegroundColor Cyan
-Write-Host ""
-Write-Host "Removing Folder2Text from your system..."
-Write-Host ""
-
 `$InstallDir = Join-Path `$env:LOCALAPPDATA `$ApplicationName
 `$RegistryBase = "HKCU:\Software\Classes"
 
-# Remove context menu entries
-Write-Host "  - Removing context menu..."
+# Remove context menu entries (resilient)
+try {
+    `$Keys = @(
+        "Directory\shell\`$ApplicationName",
+        "Directory\Background\shell\`$ApplicationName"
+    )
 
-`$Keys = @(
-    "Directory\shell\`$ApplicationName",
-    "Directory\Background\shell\`$ApplicationName"
-)
-
-foreach (`$key in `$Keys) {
-    `$fullPath = Join-Path `$RegistryBase `$key
-    if (Test-Path `$fullPath) {
-        Remove-Item `$fullPath -Recurse -Force
-    }
-}
-
-# Remove file type associations (search and remove)
-`$SystemFileAssoc = Join-Path `$RegistryBase "SystemFileAssociations"
-if (Test-Path `$SystemFileAssoc) {
-    Get-ChildItem `$SystemFileAssoc | ForEach-Object {
-        `$appPath = Join-Path `$_.PSPath "shell\`$ApplicationName"
-        if (Test-Path `$appPath) {
-            Remove-Item `$appPath -Recurse -Force
+    foreach (`$key in `$Keys) {
+        `$fullPath = Join-Path `$RegistryBase `$key
+        if (Test-Path `$fullPath) {
+            Remove-Item `$fullPath -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
         }
     }
-}
+} catch { }
 
-# Remove from Windows Programs and Features
-Write-Host "  - Removing from Control Panel..."
-`$UninstallKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\`$ApplicationName"
-if (Test-Path `$UninstallKey) {
-    Remove-Item `$UninstallKey -Recurse -Force
-}
+# Remove file type associations (resilient)
+try {
+    `$SystemFileAssoc = Join-Path `$RegistryBase "SystemFileAssociations"
+    if (Test-Path `$SystemFileAssoc) {
+        Get-ChildItem `$SystemFileAssoc -ErrorAction SilentlyContinue | ForEach-Object {
+            `$appPath = Join-Path `$_.PSPath "shell\`$ApplicationName"
+            if (Test-Path `$appPath) {
+                Remove-Item `$appPath -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
+            }
+        }
+    }
+} catch { }
 
-# Remove installation directory
-Write-Host "  - Removing files..."
-if (Test-Path `$InstallDir) {
-    Remove-Item `$InstallDir -Recurse -Force
-}
+# Remove from Control Panel (resilient)
+try {
+    `$UninstallKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\`$ApplicationName"
+    if (Test-Path `$UninstallKey) {
+        Remove-Item `$UninstallKey -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
+    }
+} catch { }
 
-Write-Host ""
-Write-Host "=== UNINSTALLATION COMPLETED ===" -ForegroundColor Green
-Write-Host ""
-Write-Host "Folder2Text has been removed from your system."
-Write-Host ""
+# Deferred self-deletion: Create VBScript helper in TEMP
+try {
+    `$CleanupScript = Join-Path `$env:TEMP "Folder2Text_Cleanup.vbs"
+    `$VbsContent = "Set objFSO = CreateObject(""Scripting.FileSystemObject"")" + [Environment]::NewLine
+    `$VbsContent += "WScript.Sleep 2000" + [Environment]::NewLine
+    `$VbsContent += "" + [Environment]::NewLine
+    `$VbsContent += "' Remove installation directory" + [Environment]::NewLine
+    `$VbsContent += "If objFSO.FolderExists(""" + `$InstallDir + """) Then" + [Environment]::NewLine
+    `$VbsContent += "    On Error Resume Next" + [Environment]::NewLine
+    `$VbsContent += "    objFSO.DeleteFolder """ + `$InstallDir + """, True" + [Environment]::NewLine
+    `$VbsContent += "    On Error Goto 0" + [Environment]::NewLine
+    `$VbsContent += "End If" + [Environment]::NewLine
+    `$VbsContent += "" + [Environment]::NewLine
+    `$VbsContent += "' Self-delete this cleanup script" + [Environment]::NewLine
+    `$VbsContent += "If objFSO.FileExists(WScript.ScriptFullName) Then" + [Environment]::NewLine
+    `$VbsContent += "    On Error Resume Next" + [Environment]::NewLine
+    `$VbsContent += "    objFSO.DeleteFile WScript.ScriptFullName, True" + [Environment]::NewLine
+    `$VbsContent += "    On Error Goto 0" + [Environment]::NewLine
+    `$VbsContent += "End If" + [Environment]::NewLine
+
+    Set-Content -Path `$CleanupScript -Value `$VbsContent -Encoding ASCII -ErrorAction SilentlyContinue
+
+    # Launch cleanup script silently and exit immediately
+    Start-Process -FilePath "wscript.exe" -ArgumentList "`$CleanupScript" -WindowStyle Hidden -ErrorAction SilentlyContinue
+} catch { }
+
+# Exit immediately (cleanup script handles file deletion)
 "@
 
 $UninstallerPath = Join-Path $DistribFolder "UNINSTALL.ps1"
@@ -259,7 +270,7 @@ $ReadmeContent = @"
 
 1. Right-click on **INSTALL.ps1** and select **"Run with PowerShell"**
 2. Wait for installation to complete (few seconds)
-3. Done! Right-click on any folder to see "Merge text files here"
+3. Done! Right-click on any folder to see "Folder2Text – Convert folder to text"
 
 ## What does it do?
 
@@ -280,8 +291,8 @@ Perfect for:
 
 ## Usage
 
-**Option 1**: Right-click on a folder → "Merge text files here"
-**Option 2**: Right-click inside a folder (on background) → "Merge text files here"
+**Option 1**: Right-click on a folder → "Folder2Text – Convert folder to text"
+**Option 2**: Right-click inside a folder (on background) → "Folder2Text – Convert folder to text"
 **Option 3**: Right-click on text files → "Merge with other text files"
 
 Output file will be created in the parent directory with format:

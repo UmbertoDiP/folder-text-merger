@@ -103,7 +103,7 @@ $FolderCommandKey = Join-Path $FolderMenuKey "command"
 New-Item -Path $FolderMenuKey -Force | Out-Null
 New-Item -Path $FolderCommandKey -Force | Out-Null
 
-Set-ItemProperty -Path $FolderMenuKey -Name "(Default)" -Value "Merge text files here"
+Set-ItemProperty -Path $FolderMenuKey -Name "(Default)" -Value "Folder2Text – Convert folder to text"
 Set-ItemProperty -Path $FolderMenuKey -Name "Icon" -Value "$TargetExecutablePath,0"
 Set-ItemProperty -Path $FolderCommandKey -Name "(Default)" -Value "`"$TargetExecutablePath`" `"%1`""
 
@@ -116,7 +116,7 @@ $BackgroundCommandKey = Join-Path $BackgroundMenuKey "command"
 New-Item -Path $BackgroundMenuKey -Force | Out-Null
 New-Item -Path $BackgroundCommandKey -Force | Out-Null
 
-Set-ItemProperty -Path $BackgroundMenuKey -Name "(Default)" -Value "Merge text files here"
+Set-ItemProperty -Path $BackgroundMenuKey -Name "(Default)" -Value "Folder2Text – Convert folder to text"
 Set-ItemProperty -Path $BackgroundMenuKey -Name "Icon" -Value "$TargetExecutablePath,0"
 Set-ItemProperty -Path $BackgroundCommandKey -Name "(Default)" -Value "`"$TargetExecutablePath`" `"%V`""
 
