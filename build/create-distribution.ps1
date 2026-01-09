@@ -33,7 +33,9 @@ Write-Host ">>> Copying configuration..."
 $ConfigFolder = Join-Path $ProjectRoot "config"
 Copy-Item $ConfigFolder $DistribFolder -Recurse
 
-# Create standalone installer
+# ---------------------------------------------------------
+# GENERATING INSTALLER (INSTALL.ps1)
+# ---------------------------------------------------------
 Write-Host ">>> Creating standalone installer..."
 
 $InstallerContent = @"
@@ -153,6 +155,7 @@ Set-ItemProperty -Path `$UninstallKey -Name "DisplayName" -Value "Folder2Text"
 Set-ItemProperty -Path `$UninstallKey -Name "DisplayVersion" -Value `$Version
 Set-ItemProperty -Path `$UninstallKey -Name "Publisher" -Value "Folder2Text"
 Set-ItemProperty -Path `$UninstallKey -Name "InstallLocation" -Value `$InstallDir
+# NOTE: Added -WindowStyle Hidden here to ensure silent launch from Control Panel
 Set-ItemProperty -Path `$UninstallKey -Name "UninstallString" -Value "powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -NonInteractive -File `$q`$UninstallScript`$q"
 Set-ItemProperty -Path `$UninstallKey -Name "DisplayIcon" -Value "`$TargetExe,0"
 Set-ItemProperty -Path `$UninstallKey -Name "NoModify" -Value 1 -Type DWord
@@ -178,21 +181,24 @@ Write-Host ""
 $InstallerPath = Join-Path $DistribFolder "INSTALL.ps1"
 Set-Content -Path $InstallerPath -Value $InstallerContent -Encoding UTF8
 
-# Create uninstaller
+
+# ---------------------------------------------------------
+# GENERATING UNINSTALLER (UNINSTALL.ps1)
+# ---------------------------------------------------------
 Write-Host ">>> Creating uninstaller..."
 
 $UninstallerContent = @"
 # =========================
 # Folder2Text v$Version - Silent Uninstaller
 # =========================
-# Completely silent operation with deferred self-deletion
+# Completely silent operation with ROBUST self-deletion
 
 `$ErrorActionPreference = "SilentlyContinue"
 `$ApplicationName = "Folder2Text"
 `$InstallDir = Join-Path `$env:LOCALAPPDATA `$ApplicationName
 `$RegistryBase = "HKCU:\Software\Classes"
 
-# Remove context menu entries (resilient)
+# 1. Remove context menu entries
 try {
     `$Keys = @(
         "Directory\shell\`$ApplicationName",
@@ -207,7 +213,7 @@ try {
     }
 } catch { }
 
-# Remove file type associations (resilient)
+# 2. Remove file type associations
 try {
     `$SystemFileAssoc = Join-Path `$RegistryBase "SystemFileAssociations"
     if (Test-Path `$SystemFileAssoc) {
@@ -220,7 +226,7 @@ try {
     }
 } catch { }
 
-# Remove from Control Panel (resilient)
+# 3. Remove from Control Panel
 try {
     `$UninstallKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\`$ApplicationName"
     if (Test-Path `$UninstallKey) {
@@ -228,39 +234,54 @@ try {
     }
 } catch { }
 
-# Deferred self-deletion: Create VBScript helper in TEMP
+# 4. Deferred self-deletion: Create ROBUST VBScript helper in TEMP
 try {
     `$CleanupScript = Join-Path `$env:TEMP "Folder2Text_Cleanup.vbs"
-    `$VbsContent = "Set objFSO = CreateObject(""Scripting.FileSystemObject"")" + [Environment]::NewLine
-    `$VbsContent += "WScript.Sleep 2000" + [Environment]::NewLine
-    `$VbsContent += "" + [Environment]::NewLine
-    `$VbsContent += "' Remove installation directory" + [Environment]::NewLine
-    `$VbsContent += "If objFSO.FolderExists(""" + `$InstallDir + """) Then" + [Environment]::NewLine
-    `$VbsContent += "    On Error Resume Next" + [Environment]::NewLine
-    `$VbsContent += "    objFSO.DeleteFolder """ + `$InstallDir + """, True" + [Environment]::NewLine
-    `$VbsContent += "    On Error Goto 0" + [Environment]::NewLine
-    `$VbsContent += "End If" + [Environment]::NewLine
-    `$VbsContent += "" + [Environment]::NewLine
-    `$VbsContent += "' Self-delete this cleanup script" + [Environment]::NewLine
-    `$VbsContent += "If objFSO.FileExists(WScript.ScriptFullName) Then" + [Environment]::NewLine
-    `$VbsContent += "    On Error Resume Next" + [Environment]::NewLine
-    `$VbsContent += "    objFSO.DeleteFile WScript.ScriptFullName, True" + [Environment]::NewLine
-    `$VbsContent += "    On Error Goto 0" + [Environment]::NewLine
-    `$VbsContent += "End If" + [Environment]::NewLine
+    
+    # We build the VBS content line by line for clarity and correct variable injection
+    # This VBS loops for 10 seconds trying to delete the folder
+    `$VbsLines = @(
+        'Set objFSO = CreateObject("Scripting.FileSystemObject")',
+        'strFolder = "' + `$InstallDir + '"',
+        'strScript = WScript.ScriptFullName',
+        '',
+        "' Loop up to 20 times (approx 10 seconds) waiting for file unlock",
+        'For i = 1 To 20',
+        '    WScript.Sleep 500',
+        '    On Error Resume Next',
+        '    If objFSO.FolderExists(strFolder) Then',
+        '        objFSO.DeleteFolder strFolder, True',
+        '    End If',
+        '    If Err.Number = 0 Then Exit For',
+        '    Err.Clear',
+        '    On Error Goto 0',
+        'Next',
+        '',
+        "' Self-delete VBS",
+        'On Error Resume Next',
+        'If objFSO.FileExists(strScript) Then',
+        '    objFSO.DeleteFile strScript, True',
+        'End If'
+    )
+    
+    `$VbsContent = `$VbsLines -join [Environment]::NewLine
+    
+    Set-Content -Path `$CleanupScript -Value `$VbsContent -Encoding ASCII -Force -ErrorAction SilentlyContinue
 
-    Set-Content -Path `$CleanupScript -Value `$VbsContent -Encoding ASCII -ErrorAction SilentlyContinue
-
-    # Launch cleanup script silently and exit immediately
-    Start-Process -FilePath "wscript.exe" -ArgumentList "`$CleanupScript" -WindowStyle Hidden -ErrorAction SilentlyContinue
+    # Launch cleanup script silently (hidden window)
+    Start-Process -FilePath "wscript.exe" -ArgumentList "`"`$CleanupScript`"" -WindowStyle Hidden -ErrorAction SilentlyContinue
 } catch { }
 
-# Exit immediately (cleanup script handles file deletion)
+# Exit immediately so the VBS can delete this folder
 "@
 
 $UninstallerPath = Join-Path $DistribFolder "UNINSTALL.ps1"
 Set-Content -Path $UninstallerPath -Value $UninstallerContent -Encoding UTF8
 
-# Create README
+
+# ---------------------------------------------------------
+# GENERATING README & ZIP
+# ---------------------------------------------------------
 Write-Host ">>> Creating README..."
 
 $ReadmeContent = @"
