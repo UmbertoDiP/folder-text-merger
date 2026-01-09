@@ -1,14 +1,21 @@
 # Test folders
 direct-test/
 test_summary/
+tests/testiamo/
 
 # Output files
 output-*.txt
+*_output.txt
 
 # Python cache
 __pycache__/
 *.pyc
 *.pyo
+
+# Python virtual environment
+venv/
+env/
+.venv/
 
 # Build artifacts
 build/
@@ -25,3 +32,8 @@ dist/
 # Distribution packages
 distribution/
 FolderTextMerger-v*-Setup.zip
+Folder2Text-v*-Setup.zip
+
+# Uninstall scripts (temporary/testing)
+force-uninstall.ps1
+manual-uninstall.ps1
