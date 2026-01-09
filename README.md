@@ -1,8 +1,8 @@
-# FolderTextMerger
+# Folder2Text
 
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.0.5-brightgreen.svg)]()
+[![Version](https://img.shields.io/badge/version-1.0.6-brightgreen.svg)]()
 
 Merge multiple text files from folders into a single output file. Perfect for sharing code with AI assistants, code reviews, and documentation consolidation.
 
@@ -21,7 +21,7 @@ Merge multiple text files from folders into a single output file. Perfect for sh
 
 ### Installation
 
-1. Download `FolderTextMerger-v1.0.5-Setup.zip`
+1. Download `Folder2Text-v1.0.6-Setup.zip`
 2. Extract all files
 3. Right-click **INSTALL.ps1** → "Run with PowerShell"
 4. Done! 🎉
@@ -38,7 +38,7 @@ Output file format: `output-[foldername]-[timestamp].txt`
 
 ### Uninstallation
 
-**Option 1** (Recommended): Settings > Apps > Apps & features > FolderTextMerger > Uninstall
+**Option 1** (Recommended): Settings > Apps > Apps & features > Folder2Text > Uninstall
 
 **Option 2**: Right-click on **UNINSTALL.ps1** → "Run with PowerShell"
 
@@ -69,7 +69,7 @@ pip install pyinstaller
 
 # Build executable
 cd src
-python -m PyInstaller --onefile --windowed --name=FolderTextMerger --icon=../assets/app_icon.ico FolderTextMerger.py
+python -m PyInstaller --onefile --windowed --name=Folder2Text --icon=../assets/app_icon.ico Folder2Text.py
 
 # Create distribution package
 cd ../build
@@ -79,9 +79,9 @@ powershell -ExecutionPolicy Bypass -File create-distribution.ps1
 ### Project Structure
 
 ```
-FolderTextMerger/
+Folder2Text/
 ├── src/                          # Source code
-│   └── FolderTextMerger.py       # Main application (v1.0.5)
+│   └── Folder2Text.py       # Main application (v1.0.5)
 ├── build/                        # Build scripts
 │   ├── create-distribution.ps1   # Distribution package creator
 │   └── msix/                     # MSIX package (future: Microsoft Store)
@@ -94,22 +94,22 @@ FolderTextMerger/
 │   ├── maintenance/              # Maintenance scripts
 │   └── archive/                  # Old installation scripts (obsolete)
 ├── tests/                        # Test suites
-└── FolderTextMerger.exe          # Production executable
+└── Folder2Text.exe          # Production executable
 ```
 
 ## 📁 Important Paths
 
-- **Executable**: `%LOCALAPPDATA%\FolderTextMerger\FolderTextMerger.exe`
-- **Logs**: `%LOCALAPPDATA%\FolderTextMerger\logs\debug.log`
-- **Config**: `%LOCALAPPDATA%\FolderTextMerger\config\`
+- **Executable**: `%LOCALAPPDATA%\Folder2Text\Folder2Text.exe`
+- **Logs**: `%LOCALAPPDATA%\Folder2Text\logs\debug.log`
+- **Config**: `%LOCALAPPDATA%\Folder2Text\config\`
 
 Quick access:
 ```powershell
 # Open log file
-notepad $env:LOCALAPPDATA\FolderTextMerger\logs\debug.log
+notepad $env:LOCALAPPDATA\Folder2Text\logs\debug.log
 
 # Open installation folder
-explorer $env:LOCALAPPDATA\FolderTextMerger
+explorer $env:LOCALAPPDATA\Folder2Text
 ```
 
 ## 🐛 Troubleshooting
@@ -119,7 +119,8 @@ explorer $env:LOCALAPPDATA\FolderTextMerger
 2. Reinstall: Extract ZIP and run INSTALL.ps1
 
 **Issue: Application doesn't work**
-1. Check logs: `%LOCALAPPDATA%\FolderTextMerger\logs\debug.log`
+
+1. Check logs: `%LOCALAPPDATA%\Folder2Text\logs\debug.log`
 2. Verify executable exists
 3. Reinstall from ZIP package
 
@@ -150,6 +151,6 @@ For issues or questions: [GitHub Issues](https://github.com/UmbertoDiP/folder-te
 
 ---
 
-**Version**: 1.0.5
+**Version**: 1.0.6
 **Status**: 🟢 Production Ready
 **Last Updated**: 2026-01-09

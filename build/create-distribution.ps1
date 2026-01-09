@@ -1,5 +1,5 @@
 # =========================
-# FolderTextMerger - Distribution Package Creator
+# Folder2Text - Distribution Package Creator
 # =========================
 
 Set-StrictMode -Version Latest
@@ -8,7 +8,7 @@ $ErrorActionPreference = "Stop"
 $ScriptDir = $PSScriptRoot
 $ProjectRoot = Split-Path $ScriptDir -Parent
 $DistribFolder = Join-Path $ProjectRoot "distribution"
-$Version = "1.0.5"
+$Version = "1.0.6"
 
 Write-Host ""
 Write-Host "=== Creating Distribution Package v$Version ===" -ForegroundColor Cyan
@@ -22,7 +22,7 @@ New-Item -ItemType Directory -Path $DistribFolder | Out-Null
 
 # Copy executable
 Write-Host ">>> Copying executable..."
-$ExePath = Join-Path $ProjectRoot "FolderTextMerger.exe"
+$ExePath = Join-Path $ProjectRoot "Folder2Text.exe"
 if (-not (Test-Path $ExePath)) {
     throw "Executable not found: $ExePath"
 }
@@ -38,23 +38,23 @@ Write-Host ">>> Creating standalone installer..."
 
 $InstallerContent = @"
 # =========================
-# FolderTextMerger v$Version - Standalone Installer
+# Folder2Text v$Version - Standalone Installer
 # =========================
-# This script installs FolderTextMerger on your system
+# This script installs Folder2Text on your system
 # No admin rights required - installs to user profile
 # =========================
 
 Set-StrictMode -Version Latest
 `$ErrorActionPreference = "Stop"
 
-`$ApplicationName = "FolderTextMerger"
+`$ApplicationName = "Folder2Text"
 `$Version = "$Version"
 `$q = [char]34  # Double quote character
 
 Write-Host ""
-Write-Host "=== FolderTextMerger v`$Version - Installer ===" -ForegroundColor Cyan
+Write-Host "=== Folder2Text v`$Version - Installer ===" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "Installing FolderTextMerger..."
+Write-Host "Installing Folder2Text..."
 Write-Host "Installation location: `$env:LOCALAPPDATA\`$ApplicationName"
 Write-Host ""
 
@@ -62,8 +62,8 @@ Write-Host ""
 `$ScriptDir = `$PSScriptRoot
 `$InstallDir = Join-Path `$env:LOCALAPPDATA `$ApplicationName
 `$LogDir = Join-Path `$InstallDir "logs"
-`$SourceExe = Join-Path `$ScriptDir "FolderTextMerger.exe"
-`$TargetExe = Join-Path `$InstallDir "FolderTextMerger.exe"
+`$SourceExe = Join-Path `$ScriptDir "Folder2Text.exe"
+`$TargetExe = Join-Path `$InstallDir "Folder2Text.exe"
 `$ConfigSource = Join-Path `$ScriptDir "config"
 
 # Verify source files
@@ -149,9 +149,9 @@ New-Item -Path `$UninstallKey -Force | Out-Null
 # Calculate installation size (in KB)
 `$InstallSize = [math]::Round((Get-ChildItem `$InstallDir -Recurse -File | Measure-Object -Property Length -Sum).Sum / 1KB)
 
-Set-ItemProperty -Path `$UninstallKey -Name "DisplayName" -Value "FolderTextMerger"
+Set-ItemProperty -Path `$UninstallKey -Name "DisplayName" -Value "Folder2Text"
 Set-ItemProperty -Path `$UninstallKey -Name "DisplayVersion" -Value `$Version
-Set-ItemProperty -Path `$UninstallKey -Name "Publisher" -Value "FolderTextMerger"
+Set-ItemProperty -Path `$UninstallKey -Name "Publisher" -Value "Folder2Text"
 Set-ItemProperty -Path `$UninstallKey -Name "InstallLocation" -Value `$InstallDir
 Set-ItemProperty -Path `$UninstallKey -Name "UninstallString" -Value "powershell.exe -ExecutionPolicy Bypass -File `$q`$UninstallScript`$q"
 Set-ItemProperty -Path `$UninstallKey -Name "DisplayIcon" -Value "`$TargetExe,0"
@@ -170,7 +170,7 @@ Write-Host "Control Panel: Registered"
 Write-Host ""
 Write-Host "You can now right-click on any folder to use 'Merge text files here'"
 Write-Host ""
-Write-Host "To uninstall: Settings > Apps > Apps & features > FolderTextMerger > Uninstall"
+Write-Host "To uninstall: Settings > Apps > Apps & features > Folder2Text > Uninstall"
 Write-Host "Or run UNINSTALL.ps1 from: `$InstallDir"
 Write-Host ""
 "@
@@ -183,18 +183,18 @@ Write-Host ">>> Creating uninstaller..."
 
 $UninstallerContent = @"
 # =========================
-# FolderTextMerger v$Version - Uninstaller
+# Folder2Text v$Version - Uninstaller
 # =========================
 
 Set-StrictMode -Version Latest
 `$ErrorActionPreference = "Stop"
 
-`$ApplicationName = "FolderTextMerger"
+`$ApplicationName = "Folder2Text"
 
 Write-Host ""
-Write-Host "=== FolderTextMerger - Uninstaller ===" -ForegroundColor Cyan
+Write-Host "=== Folder2Text - Uninstaller ===" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "Removing FolderTextMerger from your system..."
+Write-Host "Removing Folder2Text from your system..."
 Write-Host ""
 
 `$InstallDir = Join-Path `$env:LOCALAPPDATA `$ApplicationName
@@ -242,7 +242,7 @@ if (Test-Path `$InstallDir) {
 Write-Host ""
 Write-Host "=== UNINSTALLATION COMPLETED ===" -ForegroundColor Green
 Write-Host ""
-Write-Host "FolderTextMerger has been removed from your system."
+Write-Host "Folder2Text has been removed from your system."
 Write-Host ""
 "@
 
@@ -253,7 +253,7 @@ Set-Content -Path $UninstallerPath -Value $UninstallerContent -Encoding UTF8
 Write-Host ">>> Creating README..."
 
 $ReadmeContent = @"
-# FolderTextMerger v$Version
+# Folder2Text v$Version
 
 ## Quick Start
 
@@ -263,7 +263,7 @@ $ReadmeContent = @"
 
 ## What does it do?
 
-FolderTextMerger combines multiple text files from a folder into a single output file.
+Folder2Text combines multiple text files from a folder into a single output file.
 Perfect for:
 - Sharing code with AI assistants (Claude, ChatGPT, etc.)
 - Creating project snapshots
@@ -289,7 +289,7 @@ Output file will be created in the parent directory with format:
 
 ## Uninstallation
 
-**Option 1** (Recommended): Settings > Apps > Apps & features > FolderTextMerger > Uninstall
+**Option 1** (Recommended): Settings > Apps > Apps & features > Folder2Text > Uninstall
 
 **Option 2**: Right-click on **UNINSTALL.ps1** and select **"Run with PowerShell"**
 
@@ -311,7 +311,7 @@ $Version (Released: $(Get-Date -Format 'yyyy-MM-dd'))
 
 ## License
 
-Copyright (c) 2026 FolderTextMerger. All rights reserved.
+Copyright (c) 2026 Folder2Text. All rights reserved.
 
 ---
 
@@ -331,7 +331,7 @@ Set-Content -Path $ReadmePath -Value $ReadmeContent -Encoding UTF8
 # Create ZIP archive
 Write-Host ">>> Creating ZIP archive..."
 
-$ZipName = "FolderTextMerger-v$Version-Setup.zip"
+$ZipName = "Folder2Text-v$Version-Setup.zip"
 $ZipPath = Join-Path $ProjectRoot $ZipName
 
 if (Test-Path $ZipPath) {
@@ -354,7 +354,7 @@ Write-Host "Location: $ProjectRoot"
 Write-Host "Size: $([math]::Round((Get-Item $ZipPath).Length / 1MB, 2)) MB"
 Write-Host ""
 Write-Host "Contents:"
-Write-Host "  - FolderTextMerger.exe (application)"
+Write-Host "  - Folder2Text.exe (application)"
 Write-Host "  - INSTALL.ps1 (auto-installer)"
 Write-Host "  - UNINSTALL.ps1 (uninstaller)"
 Write-Host "  - README.txt (documentation)"
