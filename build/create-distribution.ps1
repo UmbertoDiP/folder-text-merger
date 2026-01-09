@@ -138,13 +138,40 @@ if (`$SupportedExtensions.Count -gt 0) {
     Write-Host "    Registered `$(`$SupportedExtensions.Count) file types" -ForegroundColor Green
 }
 
+# 4. Register in Windows Programs and Features (Control Panel)
+Write-Host "  - Registering in Windows Programs and Features..."
+
+`$UninstallKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\`$ApplicationName"
+`$UninstallScript = Join-Path `$InstallDir "UNINSTALL.ps1"
+
+New-Item -Path `$UninstallKey -Force | Out-Null
+
+# Calculate installation size (in KB)
+`$InstallSize = [math]::Round((Get-ChildItem `$InstallDir -Recurse -File | Measure-Object -Property Length -Sum).Sum / 1KB)
+
+Set-ItemProperty -Path `$UninstallKey -Name "DisplayName" -Value "FolderTextMerger"
+Set-ItemProperty -Path `$UninstallKey -Name "DisplayVersion" -Value `$Version
+Set-ItemProperty -Path `$UninstallKey -Name "Publisher" -Value "FolderTextMerger"
+Set-ItemProperty -Path `$UninstallKey -Name "InstallLocation" -Value `$InstallDir
+Set-ItemProperty -Path `$UninstallKey -Name "UninstallString" -Value "powershell.exe -ExecutionPolicy Bypass -File `$q`$UninstallScript`$q"
+Set-ItemProperty -Path `$UninstallKey -Name "DisplayIcon" -Value "`$TargetExe,0"
+Set-ItemProperty -Path `$UninstallKey -Name "NoModify" -Value 1 -Type DWord
+Set-ItemProperty -Path `$UninstallKey -Name "NoRepair" -Value 1 -Type DWord
+Set-ItemProperty -Path `$UninstallKey -Name "EstimatedSize" -Value `$InstallSize -Type DWord
+Set-ItemProperty -Path `$UninstallKey -Name "InstallDate" -Value (Get-Date -Format "yyyyMMdd")
+Set-ItemProperty -Path `$UninstallKey -Name "URLInfoAbout" -Value "https://github.com/UmbertoDiP/folder-text-merger"
+
 Write-Host ""
 Write-Host "=== INSTALLATION COMPLETED SUCCESSFULLY ===" -ForegroundColor Green
 Write-Host ""
 Write-Host "Installed to: `$InstallDir"
 Write-Host "Context menu: Enabled"
+Write-Host "Control Panel: Registered"
 Write-Host ""
 Write-Host "You can now right-click on any folder to use 'Merge text files here'"
+Write-Host ""
+Write-Host "To uninstall: Settings > Apps > Apps & features > FolderTextMerger > Uninstall"
+Write-Host "Or run UNINSTALL.ps1 from: `$InstallDir"
 Write-Host ""
 "@
 
@@ -197,6 +224,13 @@ if (Test-Path `$SystemFileAssoc) {
             Remove-Item `$appPath -Recurse -Force
         }
     }
+}
+
+# Remove from Windows Programs and Features
+Write-Host "  - Removing from Control Panel..."
+`$UninstallKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\`$ApplicationName"
+if (Test-Path `$UninstallKey) {
+    Remove-Item `$UninstallKey -Recurse -Force
 }
 
 # Remove installation directory
@@ -255,7 +289,9 @@ Output file will be created in the parent directory with format:
 
 ## Uninstallation
 
-Right-click on **UNINSTALL.ps1** and select **"Run with PowerShell"**
+**Option 1** (Recommended): Settings > Apps > Apps & features > FolderTextMerger > Uninstall
+
+**Option 2**: Right-click on **UNINSTALL.ps1** and select **"Run with PowerShell"**
 
 ## System Requirements
 

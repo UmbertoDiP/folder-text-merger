@@ -1,88 +1,57 @@
-# FolderTextMerger - Installation Scripts
+# Scripts Directory
 
-## Main Scripts (Use These)
+This directory contains utility scripts for FolderTextMerger maintenance and development.
 
-### installer.ps1
-**Purpose**: Install FolderTextMerger and register context menu
-**Usage**:
-```powershell
-.\installer.ps1
-```
-- Copies executable to installation directory
-- Registers context menu for folders and files
-- Creates log directory
-- Works with or without admin privileges
+## Active Scripts
 
-### uninstaller.ps1
-**Purpose**: Completely remove FolderTextMerger
-**Usage**:
-```powershell
-.\uninstaller.ps1
-```
-- Removes executable from installation directory
-- Removes all context menu entries
-- Keeps logs directory (optional cleanup)
+### maintenance/
+Scripts for maintaining the application in production:
+- Registry cleanup utilities
+- Debug helpers
+- System maintenance tools
 
-### rebuild-install.ps1
-**Purpose**: Quick uninstall + reinstall (for development)
-**Usage**:
-```powershell
-.\rebuild-install.ps1
-```
-- Runs uninstaller
-- Rebuilds executable with PyInstaller
-- Runs installer
-- Useful during development cycles
+## Archive
 
----
+### archive/
+Historical installation scripts (now obsolete - replaced by `build/create-distribution.ps1`):
+- `installer.ps1` - Old manual installer
+- `uninstaller.ps1` - Old manual uninstaller
+- `rebuild-install.ps1` - Old build-and-install script
+- Legacy cleanup and diagnostic scripts
 
-## Support Folders
+**Note**: These scripts are kept for reference only. For installation, use the ZIP distribution package created by `build/create-distribution.ps1`.
 
-### `maintenance/`
-Diagnostic and inspection scripts:
-- `analyze-context-menu.ps1` - Analyze current context menu configuration
-- `find-all-context-entries.ps1` - Find all FolderTextMerger registry entries
-- `get-context-menu.ps1` - Quick check of context menu status
+## Current Installation Method
 
-### `archive/`
-Legacy cleanup scripts (rarely needed):
-- `cleanup-all-obsolete-entries.ps1` - Remove old/broken entries
-- `remove-foldertextmerger-context.ps1` - Remove only context menu
-- `remove-old-context-menu.ps1` - Remove legacy entries
+The current recommended installation method is:
 
----
+1. Generate distribution package:
 
-## Quick Reference
+   ```powershell
+   cd build
+   .\create-distribution.ps1
+   ```
 
-**First time installation**:
-```powershell
-cd scripts
-.\installer.ps1
-```
+2. Distribute the generated ZIP file:
 
-**Uninstall**:
-```powershell
-cd scripts
-.\uninstaller.ps1
-```
+   ```text
+   FolderTextMerger-v1.0.5-Setup.zip
+   ```
 
-**Development cycle** (after code changes):
-```powershell
-cd scripts
-.\rebuild-install.ps1
-```
+3. Users extract and run:
+
+   ```powershell
+   Right-click INSTALL.ps1 -> Run with PowerShell
+   ```
+
+This provides:
+
+- Automatic context menu registration
+- Windows Programs & Features integration
+- Clean uninstall capability
+- Configuration file management
+- Self-contained distribution
 
 ---
 
-## Installation Paths
-
-**Without admin privileges**:
-- Executable: `%LOCALAPPDATA%\FolderTextMerger\FolderTextMerger.exe`
-- Registry: `HKCU:\Software\Classes`
-
-**With admin privileges**:
-- Executable: `C:\Program Files\FolderTextMerger\FolderTextMerger.exe`
-- Registry: `HKLM:\Software\Classes`
-
-**Logs** (always):
-- Location: `%LOCALAPPDATA%\FolderTextMerger\logs\`
+**Last Updated**: 2026-01-09
