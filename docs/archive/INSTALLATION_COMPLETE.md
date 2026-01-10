@@ -14,7 +14,7 @@
 
 ### 3. Context Menu Configuration
 - **Registry Path**: `HKCU:\Software\Classes\Directory\shell\FolderTextMerger`
-- **Display Text**: "Folder2Text – Convert folder to text"
+- **Display Text**: "Folder2Text - Extract text from folder"
 - **Icon Source**: Points to installed executable (icon extracted automatically by Windows)
 - **Installation**: Non-admin mode (user-level AppData)
 
@@ -27,7 +27,7 @@
 
 1. **Open File Explorer**
 2. **Right-click on any folder**
-3. **Select** "Folder2Text – Convert folder to text" (should display with blue circle icon)
+3. **Select** "Folder2Text - Extract text from folder" (should display with blue circle icon)
 4. **Output** will be created in the same folder with timestamp
 
 ## 🔧 Technical Details

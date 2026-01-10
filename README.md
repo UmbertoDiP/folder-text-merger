@@ -28,9 +28,9 @@ Merge multiple text files from folders into a single output file. Perfect for sh
 
 ### Usage
 
-**Option 1**: Right-click on a folder → "Folder2Text – Convert folder to text"
+**Option 1**: Right-click on a folder → "Folder2Text - Extract text from folder"
 
-**Option 2**: Right-click inside a folder (on background) → "Folder2Text – Convert folder to text"
+**Option 2**: Right-click inside a folder (on background) → "Folder2Text - Extract text from folder"
 
 **Option 3**: Right-click on text files → "Merge with other text files"
 

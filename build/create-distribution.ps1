@@ -109,7 +109,7 @@ Write-Host "  - Configuring context menu..."
 New-Item -Path `$FolderMenuKey -Force | Out-Null
 New-Item -Path `$FolderCommandKey -Force | Out-Null
 
-Set-ItemProperty -Path `$FolderMenuKey -Name "(Default)" -Value "Folder2Text – Convert folder to text"
+Set-ItemProperty -Path `$FolderMenuKey -Name "(Default)" -Value "Folder2Text - Extract text from folder"
 Set-ItemProperty -Path `$FolderMenuKey -Name "Icon" -Value "`$TargetExe,0"
 Set-ItemProperty -Path `$FolderCommandKey -Name "(Default)" -Value "`$q`$TargetExe`$q `$q%1`$q"
 
@@ -120,7 +120,7 @@ Set-ItemProperty -Path `$FolderCommandKey -Name "(Default)" -Value "`$q`$TargetE
 New-Item -Path `$BackgroundMenuKey -Force | Out-Null
 New-Item -Path `$BackgroundCommandKey -Force | Out-Null
 
-Set-ItemProperty -Path `$BackgroundMenuKey -Name "(Default)" -Value "Folder2Text – Convert folder to text"
+Set-ItemProperty -Path `$BackgroundMenuKey -Name "(Default)" -Value "Folder2Text - Extract text from folder"
 Set-ItemProperty -Path `$BackgroundMenuKey -Name "Icon" -Value "`$TargetExe,0"
 Set-ItemProperty -Path `$BackgroundCommandKey -Name "(Default)" -Value "`$q`$TargetExe`$q `$q%V`$q"
 
@@ -291,7 +291,7 @@ $ReadmeContent = @"
 
 1. Right-click on **INSTALL.ps1** and select **"Run with PowerShell"**
 2. Wait for installation to complete (few seconds)
-3. Done! Right-click on any folder to see "Folder2Text – Convert folder to text"
+3. Done! Right-click on any folder to see "Folder2Text - Extract text from folder"
 
 ## What does it do?
 
@@ -312,8 +312,8 @@ Perfect for:
 
 ## Usage
 
-**Option 1**: Right-click on a folder → "Folder2Text – Convert folder to text"
-**Option 2**: Right-click inside a folder (on background) → "Folder2Text – Convert folder to text"
+**Option 1**: Right-click on a folder → "Folder2Text - Extract text from folder"
+**Option 2**: Right-click inside a folder (on background) → "Folder2Text - Extract text from folder"
 **Option 3**: Right-click on text files → "Merge with other text files"
 
 Output file will be created in the parent directory with format:

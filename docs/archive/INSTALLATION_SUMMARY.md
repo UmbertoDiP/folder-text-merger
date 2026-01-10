@@ -50,7 +50,7 @@ C:\MyProject\output-MyProject-20260108-153045.txt
 ### Opzione 1: Click destro su CARTELLA
 1. Vai in Esplora File
 2. Click destro su una cartella
-3. Seleziona **"Folder2Text – Convert folder to text"**
+3. Seleziona **"Folder2Text - Extract text from folder"**
 4. Attendi notifica toast (5 secondi)
 5. File creato nella cartella
 
@@ -67,7 +67,7 @@ C:\MyProject\output-MyProject-20260108-153045.txt
 ### Opzione 4: Background Cartella
 1. Apri una cartella
 2. Click destro nello **spazio vuoto**
-3. Seleziona **"Folder2Text – Convert folder to text"**
+3. Seleziona **"Folder2Text - Extract text from folder"**
 
 ---
 
@@ -248,5 +248,5 @@ Get-ChildItem $env:LOCALAPPDATA\FolderTextMerger\logs\*.log.* |
 
 Ora puoi:
 1. Click destro su qualsiasi cartella/file
-2. Selezionare "Folder2Text – Convert folder to text"
+2. Selezionare "Folder2Text - Extract text from folder"
 3. Controllare i log in `%LOCALAPPDATA%\FolderTextMerger\logs\debug.log`
