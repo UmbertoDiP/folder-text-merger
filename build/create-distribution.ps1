@@ -8,7 +8,7 @@ $ErrorActionPreference = "Stop"
 $ScriptDir = $PSScriptRoot
 $ProjectRoot = Split-Path $ScriptDir -Parent
 $DistribFolder = Join-Path $ProjectRoot "distribution"
-$Version = "1.0.8"
+$Version = "1.0.9"
 
 Write-Host ""
 Write-Host "=== Creating Distribution Package v$Version ===" -ForegroundColor Cyan
