@@ -130,7 +130,7 @@ foreach ($ext in $SupportedExtensions) {
     New-Item -Path $FileTypeMenuKey -Force | Out-Null
     New-Item -Path $FileTypeCommandKey -Force | Out-Null
 
-    Set-ItemProperty -Path $FileTypeMenuKey -Name "(Default)" -Value "Merge with other text files"
+    Set-ItemProperty -Path $FileTypeMenuKey -Name "(Default)" -Value "Folder2Text - Extract text from folder"
     Set-ItemProperty -Path $FileTypeMenuKey -Name "Icon" -Value "$TargetExecutablePath,0"
     Set-ItemProperty -Path $FileTypeCommandKey -Name "(Default)" -Value "`"$TargetExecutablePath`" `"%1`""
 }

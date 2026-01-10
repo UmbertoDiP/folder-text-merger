@@ -92,7 +92,7 @@ if ($SupportedExtensions.Count -gt 0) {
         New-Item -Path $FileTypeMenuKey -Force | Out-Null
         New-Item -Path $FileTypeCommandKey -Force | Out-Null
 
-        Set-ItemProperty -Path $FileTypeMenuKey -Name "(Default)" -Value "Merge with other text files"
+        Set-ItemProperty -Path $FileTypeMenuKey -Name "(Default)" -Value "Folder2Text - Extract text from folder"
         Set-ItemProperty -Path $FileTypeMenuKey -Name "Icon" -Value "$TargetExe,0"
         Set-ItemProperty -Path $FileTypeCommandKey -Name "(Default)" -Value "$q$TargetExe$q $q%1$q"
     }

@@ -8,7 +8,7 @@ $ErrorActionPreference = "Stop"
 $ScriptDir = $PSScriptRoot
 $ProjectRoot = Split-Path $ScriptDir -Parent
 $DistribFolder = Join-Path $ProjectRoot "distribution"
-$Version = "1.0.9"
+$Version = "1.0.8"
 
 Write-Host ""
 Write-Host "=== Creating Distribution Package v$Version ===" -ForegroundColor Cyan
@@ -133,7 +133,7 @@ if (`$SupportedExtensions.Count -gt 0) {
         New-Item -Path `$FileTypeMenuKey -Force | Out-Null
         New-Item -Path `$FileTypeCommandKey -Force | Out-Null
 
-        Set-ItemProperty -Path `$FileTypeMenuKey -Name "(Default)" -Value "Merge with other text files"
+        Set-ItemProperty -Path `$FileTypeMenuKey -Name "(Default)" -Value "Folder2Text - Extract text from folder"
         Set-ItemProperty -Path `$FileTypeMenuKey -Name "Icon" -Value "`$TargetExe,0"
         Set-ItemProperty -Path `$FileTypeCommandKey -Name "(Default)" -Value "`$q`$TargetExe`$q `$q%1`$q"
     }
@@ -314,7 +314,7 @@ Perfect for:
 
 **Option 1**: Right-click on a folder → "Folder2Text - Extract text from folder"
 **Option 2**: Right-click inside a folder (on background) → "Folder2Text - Extract text from folder"
-**Option 3**: Right-click on text files → "Merge with other text files"
+**Option 3**: Right-click on text files → "Folder2Text - Extract text from folder"
 
 Output file will be created in the parent directory with format:
 \`output-[foldername]-[timestamp].txt\`

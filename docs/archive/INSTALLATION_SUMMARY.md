@@ -56,7 +56,7 @@ C:\MyProject\output-MyProject-20260108-153045.txt
 
 ### Opzione 2: Click destro su FILE
 1. Click destro su un file `.txt`, `.py`, `.md`, etc.
-2. Seleziona **"Merge with other text files"**
+2. Seleziona **"Folder2Text - Extract text from folder"**
 3. Unisce il file con altri nella stessa cartella
 
 ### Opzione 3: Selezione Multipla

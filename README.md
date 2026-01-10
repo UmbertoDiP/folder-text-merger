@@ -32,7 +32,7 @@ Merge multiple text files from folders into a single output file. Perfect for sh
 
 **Option 2**: Right-click inside a folder (on background) → "Folder2Text - Extract text from folder"
 
-**Option 3**: Right-click on text files → "Merge with other text files"
+**Option 3**: Right-click on text files → "Folder2Text - Extract text from folder"
 
 Output file format: `output-[foldername]-[timestamp].txt`
 

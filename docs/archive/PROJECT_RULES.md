@@ -88,7 +88,7 @@ The installer registers **4 different context menu locations**:
 ### 3. File Type Menus (65 extensions)
 - **Trigger**: Right-click on a `.txt`, `.py`, `.md`, etc. file
 - **Registry**: `HKCU:\Software\Classes\SystemFileAssociations\{ext}\shell\FolderTextMerger`
-- **Display**: "Merge with other text files"
+- **Display**: "Folder2Text - Extract text from folder"
 - **Action**: Merge the selected file with others in same folder
 
 ### 4. Multi-Selection Menu
@@ -140,7 +140,7 @@ The installer registers **4 different context menu locations**:
 
 4. **Verify**:
    - Right-click on a `.newext` file
-   - Should see "Merge with other text files" menu
+   - Should see "Folder2Text - Extract text from folder" menu
 
 ---
 

@@ -27,7 +27,7 @@ Perfect for:
 
 **Option 1**: Right-click on a folder â†’ "Folder2Text - Extract text from folder"
 **Option 2**: Right-click inside a folder (on background) â†’ "Folder2Text - Extract text from folder"
-**Option 3**: Right-click on text files â†’ "Merge with other text files"
+**Option 3**: Right-click on text files â†’ "Folder2Text - Extract text from folder"
 
 Output file will be created in the parent directory with format:
 \output-[foldername]-[timestamp].txt\
