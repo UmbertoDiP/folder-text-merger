@@ -8,7 +8,7 @@ $ErrorActionPreference = "Stop"
 $ScriptDir = $PSScriptRoot
 $ProjectRoot = Split-Path $ScriptDir -Parent
 $DistribFolder = Join-Path $ProjectRoot "distribution"
-$Version = "1.0.8"
+$Version = "1.0.11"
 
 Write-Host ""
 Write-Host "=== Creating Distribution Package v$Version ===" -ForegroundColor Cyan
@@ -113,16 +113,9 @@ Set-ItemProperty -Path `$FolderMenuKey -Name "(Default)" -Value "Folder2Text - E
 Set-ItemProperty -Path `$FolderMenuKey -Name "Icon" -Value "`$TargetExe,0"
 Set-ItemProperty -Path `$FolderCommandKey -Name "(Default)" -Value "`$q`$TargetExe`$q `$q%1`$q"
 
-# 2. Folder background context menu
-`$BackgroundMenuKey = Join-Path `$RegistryBase "Directory\Background\shell\`$ApplicationName"
-`$BackgroundCommandKey = Join-Path `$BackgroundMenuKey "command"
-
-New-Item -Path `$BackgroundMenuKey -Force | Out-Null
-New-Item -Path `$BackgroundCommandKey -Force | Out-Null
-
-Set-ItemProperty -Path `$BackgroundMenuKey -Name "(Default)" -Value "Folder2Text - Extract text from folder"
-Set-ItemProperty -Path `$BackgroundMenuKey -Name "Icon" -Value "`$TargetExe,0"
-Set-ItemProperty -Path `$BackgroundCommandKey -Name "(Default)" -Value "`$q`$TargetExe`$q `$q%V`$q"
+# 2. Folder background context menu - DISABLED
+# Removed to avoid appearing in empty folders (edge case)
+# Users can use folder menu instead
 
 # 3. File type menus
 if (`$SupportedExtensions.Count -gt 0) {
@@ -201,8 +194,8 @@ $UninstallerContent = @"
 # 1. Remove context menu entries
 try {
     `$Keys = @(
-        "Directory\shell\`$ApplicationName",
-        "Directory\Background\shell\`$ApplicationName"
+        "Directory\shell\`$ApplicationName"
+        # Background menu removed in v1.0.10 (no longer registered)
     )
 
     foreach (`$key in `$Keys) {
@@ -210,6 +203,12 @@ try {
         if (Test-Path `$fullPath) {
             Remove-Item `$fullPath -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
         }
+    }
+
+    # Also clean old Background menu if exists (legacy cleanup)
+    `$BackgroundPath = Join-Path `$RegistryBase "Directory\Background\shell\`$ApplicationName"
+    if (Test-Path `$BackgroundPath) {
+        Remove-Item `$BackgroundPath -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
     }
 } catch { }
 

@@ -88,3 +88,6 @@
 
 # Rich Text
 .rtf
+
+# PDF Documents
+.pdf

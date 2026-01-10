@@ -15,7 +15,7 @@ from typing import Iterable, List, Set, Optional
 # =========================
 
 APP_NAME = "Folder2Text"
-VERSION = "1.0.9"
+VERSION = "1.0.11"
 COPYRIGHT = "Copyright (c) 2026 Folder2Text. All rights reserved."
 
 # =========================
@@ -226,6 +226,96 @@ def read_text_safely(path: Path) -> Optional[str]:
             continue
     return None
 
+def extract_pdf_text(path: Path) -> Optional[str]:
+    """
+    Extract text from PDF file.
+    Returns None if extraction fails or PDF is image-only.
+    """
+    try:
+        import PyPDF2
+        with open(path, 'rb') as file:
+            reader = PyPDF2.PdfReader(file)
+
+            # Check if PDF has pages
+            if len(reader.pages) == 0:
+                return None
+
+            # Extract text from all pages
+            text_parts = []
+            for page in reader.pages:
+                page_text = page.extract_text()
+                if page_text:
+                    text_parts.append(page_text)
+
+            full_text = '\n\n'.join(text_parts)
+
+            # Return None if no text extracted (image-only PDF)
+            if not full_text.strip():
+                return None
+
+            return full_text
+
+    except ImportError:
+        logging.warning("PyPDF2 not installed - PDF support disabled")
+        return None
+    except Exception as e:
+        logging.debug(f"PDF extraction failed: {e}")
+        return None
+
+def validate_selection(arguments: Iterable[str]) -> tuple[bool, str]:
+    """
+    Validate user selection according to context menu rules.
+    Returns (is_valid, error_message).
+
+    Rules:
+    1. Single file: Must be supported extension
+    2. Multi-selection with folders: Always valid
+    3. Multi-selection files only: At least one must be supported
+    """
+    paths = []
+    for argument in arguments:
+        sanitized = sanitize_argument(argument)
+        if sanitized:
+            path = Path(sanitized).expanduser().resolve()
+            if path.exists():
+                paths.append(path)
+
+    if not paths:
+        return False, "No valid paths provided."
+
+    # Check if any path is a directory
+    has_directory = any(p.is_dir() for p in paths)
+
+    # CASE 2: Multi-selection with at least one folder -> Always valid
+    if has_directory:
+        return True, ""
+
+    # Get only files
+    files = [p for p in paths if p.is_file()]
+
+    if not files:
+        return False, "No valid files in selection."
+
+    # CASE 1: Single file
+    if len(files) == 1:
+        if is_supported_file(files[0]):
+            return True, ""
+        else:
+            ext = files[0].suffix.lower() or "(no extension)"
+            return False, f"File type '{ext}' is not supported.\n\nSupported types include: .txt, .py, .java, .js, .md, .json, .pdf, and 60+ more.\n\nSee documentation for full list."
+
+    # CASE 3: Multi-selection files only
+    # At least one must be supported
+    supported_files = [f for f in files if is_supported_file(f)]
+
+    if supported_files:
+        return True, ""
+    else:
+        # Show first few unsupported extensions
+        unsupported_exts = list(set(f.suffix.lower() for f in files[:5]))
+        ext_list = ", ".join(unsupported_exts)
+        return False, f"None of the selected files are supported.\n\nUnsupported types: {ext_list}\n\nSupported types include: .txt, .py, .java, .js, .md, .json, .pdf, and 60+ more."
+
 def expand_input_paths(arguments: Iterable[str]) -> List[Path]:
     collected_files: Set[Path] = set()
 
@@ -285,6 +375,26 @@ def main() -> None:
 
     configure_logging(args.verbose)
     logging.debug("Arguments received: %s", args.paths)
+
+    # Validate selection before processing
+    is_valid, error_message = validate_selection(args.paths)
+    if not is_valid:
+        logging.warning("Invalid selection: %s", error_message)
+        # Show user-friendly error dialog (windowed mode)
+        try:
+            import tkinter as tk
+            from tkinter import messagebox
+            root = tk.Tk()
+            root.withdraw()  # Hide main window
+            messagebox.showerror(
+                f"{APP_NAME} - Invalid Selection",
+                error_message
+            )
+            root.destroy()
+        except Exception:
+            # Fallback to console error
+            print(f"\nERROR: {error_message}")
+        sys.exit(EXIT_NO_FILES)
 
     selected_files = expand_input_paths(args.paths)
 
@@ -364,18 +474,28 @@ def main() -> None:
                         logging.debug("Skipped oversized file: %s", relative_name)
                     continue
 
-                if not is_probably_text_file(file_path):
-                    excluded_files.append((file_path, "Binary file detected"))
-                    if DEV_MODE:
-                        logging.debug("Skipped binary-like file: %s", relative_name)
-                    continue
+                # Special handling for PDF files (skip binary detection)
+                if file_path.suffix.lower() == '.pdf':
+                    content = extract_pdf_text(file_path)
+                    if content is None:
+                        excluded_files.append((file_path, "PDF text extraction failed (image-only or encrypted)"))
+                        if DEV_MODE:
+                            logging.debug("PDF unreadable: %s", relative_name)
+                        continue
+                else:
+                    # Standard text file handling
+                    if not is_probably_text_file(file_path):
+                        excluded_files.append((file_path, "Binary file detected"))
+                        if DEV_MODE:
+                            logging.debug("Skipped binary-like file: %s", relative_name)
+                        continue
 
-                content = read_text_safely(file_path)
-                if content is None:
-                    excluded_files.append((file_path, "Encoding not supported"))
-                    if DEV_MODE:
-                        logging.debug("Unreadable file: %s", relative_name)
-                    continue
+                    content = read_text_safely(file_path)
+                    if content is None:
+                        excluded_files.append((file_path, "Encoding not supported"))
+                        if DEV_MODE:
+                            logging.debug("Unreadable file: %s", relative_name)
+                        continue
 
                 temporary_file.write(f"\n=== {relative_name} ===\n")
                 temporary_file.write(content.rstrip())
